@@ -3,11 +3,11 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 
 type UserReq = {
-  username: string
+  userId: string
 }
 
 type UserRes = {
-  username: string
+  userId: string
 }
 
 
@@ -16,9 +16,6 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<UserRes>
 ) {
-  const query = req.query as UserReq;
-  const body = req.body;
-
-  console.log(query)
-  res.status(200).json({ username: query?.username })
+  const { userId } = req.query as UserReq;
+  res.status(200).json({ userId })
 }
