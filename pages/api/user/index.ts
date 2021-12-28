@@ -1,16 +1,12 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { User } from '../../../models/user';
+import { getUsers } from '../../../services/user';
 
+type UserRes = User[];
 
-type UserRes = {
-  username: string
-}
+const handler = async (req: NextApiRequest, res: NextApiResponse<UserRes>) => {
+  const users = await getUsers();
+  res.status(200).json(users);
+};
 
-
-
-export default function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<UserRes>
-) {
-  res.status(200).json({ username: 'this is user list' })
-}
+export default handler;
