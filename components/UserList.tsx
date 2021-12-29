@@ -1,11 +1,14 @@
 import React, { FC } from 'react';
 import { Button, Empty } from '@douyinfe/semi-ui';
 import { User } from '@models/user';
+import { useRouter } from 'next/router';
 
 const UserList: FC<{ list: (User & { _id: string })[] }> = ({ list }) => {
+  const router = useRouter();
+
   if (Array.isArray(list) && list.length) {
     return (
-      <div className="flex flex-wrap">
+      <div className="flex flex-wrap pt-4 pl-4">
         {list.map((user) => {
           const { _id, name, email } = user;
           return (
@@ -14,7 +17,9 @@ const UserList: FC<{ list: (User & { _id: string })[] }> = ({ list }) => {
               className="mr-4 mb-4 inline-flex space-x-4 bg-white shadow-md p-4 items-center rounded"
             >
               <h2>{name}</h2>
-              <Button>{email}</Button>
+              <Button onClick={() => router.push(`/user/${_id}`)}>
+                {email}
+              </Button>
             </div>
           );
         })}

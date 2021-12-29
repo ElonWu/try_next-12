@@ -1,64 +1,56 @@
-import type { GetServerSidePropsContext, GetStaticProps, NextPage } from 'next';
-import Head from 'next/head';
+import type { GetServerSidePropsContext, NextPage } from 'next';
 import Image from 'next/image';
-import { Button } from '@douyinfe/semi-ui';
 
-import { getUsers } from '@services/user';
 import { User } from '@models/user';
+import UserLayout from '@layouts/user';
+import { withSessionSsr } from '@lib/session';
+import { Button, Notification } from '@douyinfe/semi-ui';
+import { useCallback } from 'react';
+import { local } from '@utils/request';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 
-// const fetcher = (url: string) => fetch(url).then((r) => r.json());
+const Home: NextPage<{ user: User }> = ({ user }) => {
+  const router = useRouter();
 
-// const Home: NextPage = () => {
-// const { data } = useSWR('/api/user', fetcher);
-// const users = useMemo(() => (Array.isArray(data) ? data : []), [data]);
+  const onLogout = useCallback(async () => {
+    await local.post('/api/user/logout');
+    Notification.success({ content: '成功登出', duration: 5 });
+    router.push('/login');
+  }, [router]);
 
-const Home: NextPage<{ users: (User & { _id: string })[] }> = ({ users }) => {
   return (
-    <div>
-      <Head>
-        <title>用户列表</title>
-      </Head>
-
-      <div className="flex flex-col space-y-4 p-4 bg-gray-500 m-auto items-center">
+    <UserLayout title="首页">
+      <div className="flex flex-col space-y-4 p-4  m-auto items-center">
         {/* 静态文件 basePath 为 public */}
         <Image src="/img/vercel.svg" alt="logo" width={141} height={32} />
+        <h3>欢迎来到首页, {user?.name}</h3>
 
-        <div className="p-4 rounded bg-slate-50 flex flex-col space-y-4 ">
-          {users?.map((user: User & { _id: string }) => {
-            const { _id, name, email } = user;
-            return (
-              <div key={_id}>
-                <h2>{name}</h2>
-                <Button>{email}</Button>
-              </div>
-            );
-          })}
+        <div className="text-blue-500">
+          <Link href="/user">查看用户列表</Link>
         </div>
+        <Button onClick={onLogout}>登出</Button>
       </div>
-    </div>
+    </UserLayout>
   );
 };
 
 export default Home;
 
-// 构建时完成数据绑定
-// export const getStaticProps: GetStaticProps = async () => {
-//   const users: User[] = await getUsers();
-
-//   return {
-//     props: {
-//       users: JSON.parse(JSON.stringify(users)),
-//     },
-//   };
-// };
-
 // run-time 实时根据 params 查询和渲染
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const users: (User & { _id: string })[] = await getUsers();
+export const getServerSideProps = withSessionSsr(
+  async ({ req }: GetServerSidePropsContext) => {
+    // @ts-ignore
+    const user = req.session.user;
 
-  return {
-    props: {
-      users: JSON.parse(JSON.stringify(users)), // mongoose 的响应不能直接被序列化
-    },
-  };
-}
+    if (!user)
+      return {
+        redirect: {
+          destination: '/login',
+          permanent: false,
+        },
+      };
+
+    return { props: { user } };
+  },
+);

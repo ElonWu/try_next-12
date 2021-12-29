@@ -21,3 +21,11 @@ export const findUser = async (payload: User) => {
 
   return user;
 };
+
+export const findUserById = async (_id: string) => {
+  await connectToDatabase('bi');
+
+  const user: User | null = await UserModel.findById(_id).exec();
+
+  return user;
+};

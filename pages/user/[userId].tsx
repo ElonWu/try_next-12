@@ -1,65 +1,41 @@
-import type { GetServerSidePropsContext, NextPage } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
+import type { GetServerSidePropsContext, NextPage } from 'next';
 
+import { User } from '@models/user';
+import UserLayout from '@layouts/user';
+import { findUser, findUserById } from '@services/user';
 
-export interface UserHomeProps {
-  user: any
-}
-
-const UserHome: NextPage<UserHomeProps> = ({user}) => {
+const UserDetail: NextPage<{ user: User }> = ({ user }) => {
   return (
-    <div>
-      <Head>
-        <title>ElonWU</title>
-      </Head>
-
-      <div className='p-4 bg-gray-500'>
-        <h4 className='text-gray-50'>{user?.userId}</h4>
+    <UserLayout title="用户详情">
+      <div className="p-4 bg-gray-500">
+        <h4 className="text-gray-50">详情: {user?.name}</h4>
       </div>
-    </div>
-  )
-}
+    </UserLayout>
+  );
+};
 
-export default UserHome
-
-// // pre-render 指定的 path
-// export async function getStaticPaths() {
-//   return { paths: ['/user/12'], fallback: false } // 仅支持 pre-render /user/12 的情况
-// }
-
-
-// export async function getStaticProps({ params }: GeStaticPropsContext) {
-//   return { props: { 
-//       user: {
-//         userId: params?.userId
-//       }
-//    } }
-// }
-
+export default UserDetail;
 
 // run-time 实时根据 params 查询和渲染
-export async function getServerSideProps ({
-  params, req, res, query
+export async function getServerSideProps({
+  params,
 }: GetServerSidePropsContext) {
+  let user: User | null = null;
 
-  const userId = parseInt(params?.userId as string);
+  if (params?.userId) {
+    user = await findUserById(params.userId as string);
+  }
 
-  if (!userId) {
+  if (!user) {
     return {
       redirect: {
-        destination: '/',
+        destination: '/user',
         permanent: false,
       },
-    }
+    };
   }
-
 
   return {
-    props: {
-      user: {
-        userId
-      }
-    },
-  }
+    props: { user: JSON.parse(JSON.stringify(user)) },
+  };
 }
