@@ -1,4 +1,5 @@
-import mongoose, { Model, Schema, models } from 'mongoose';
+import mongoose, { Schema, models } from 'mongoose';
+import type { Model } from 'mongoose';
 
 // 1. Create an interface representing a document in MongoDB.
 export interface User {

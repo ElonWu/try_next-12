@@ -2,8 +2,6 @@ import type { NextPage } from 'next';
 
 // component
 import UserLayout from '@layouts/user';
-import { Notification } from '@douyinfe/semi-ui';
-import UserForm from '@components/UserForm';
 
 // util
 import { useMemo } from 'react';
