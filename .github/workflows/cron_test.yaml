@@ -1,0 +1,13 @@
+name: 30-minute-cron
+on:
+  schedule:
+    - cron: '* */30 * * *'
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Corn
+        run: |
+          curl --request POST \
+          --url 'https://elonwu.vercel.app/api/cron/test' \
+          --header 'Authorization: Bearer ${{ secrets.API_SECRET_KEY }}'
