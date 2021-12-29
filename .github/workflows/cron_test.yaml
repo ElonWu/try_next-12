@@ -1,7 +1,7 @@
 name: 30-minute-cron
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '*/2 * * * *'
 jobs:
   cron:
     runs-on: ubuntu-latest
