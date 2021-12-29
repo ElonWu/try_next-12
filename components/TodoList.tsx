@@ -4,7 +4,7 @@ import { Empty } from '@douyinfe/semi-ui';
 import type { FC } from 'react';
 import type { TodoWithCreator } from '@models/todo';
 
-const TODOList: FC<{ list: TodoWithCreator[] }> = ({ list }) => {
+const TodoList: FC<{ list: TodoWithCreator[] }> = ({ list }) => {
   if (Array.isArray(list) && list.length) {
     return (
       <div className="flex flex-wrap pt-4 pl-4">
@@ -25,7 +25,7 @@ const TODOList: FC<{ list: TodoWithCreator[] }> = ({ list }) => {
     );
   }
 
-  return <Empty title="暂无数据" description="尝试新建TODO" />;
+  return <Empty title="暂无数据" description="尝试新建Todo" />;
 };
 
-export default TODOList;
+export default TodoList;

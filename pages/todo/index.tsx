@@ -5,7 +5,7 @@ import UserLayout from '@layouts/user';
 
 // util
 import { useCallback, useMemo } from 'react';
-import TodoList from '@components/TODOList';
+import TodoList from '@components/TodoList';
 import TodoForm from '@components/TodoForm';
 import useApi from '@hooks/useApi';
 import { local } from '@utils/request';
@@ -27,7 +27,7 @@ const UserCreate: NextPage = () => {
   );
 
   return (
-    <UserLayout title="TODO 列表">
+    <UserLayout title="Todo 列表">
       <div className="rounded bg-slate-300 inline-flex flex-col items-center justify-center p-4">
         <h4>Todo 列表</h4>
         <TodoList list={list} />
