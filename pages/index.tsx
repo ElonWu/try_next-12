@@ -1,15 +1,12 @@
 import type { GetServerSidePropsContext, GetStaticProps, NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
-
-import { getUsers } from '../services/user';
-import { User } from '../models/user';
-import useSWR from 'swr';
-import { useMemo } from 'react';
 import { Button } from '@douyinfe/semi-ui';
 
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
+import { getUsers } from '@services/user';
+import { User } from '@models/user';
+
+// const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 // const Home: NextPage = () => {
 // const { data } = useSWR('/api/user', fetcher);
@@ -23,6 +20,7 @@ const Home: NextPage<{ users: (User & { _id: string })[] }> = ({ users }) => {
       </Head>
 
       <div className="flex flex-col space-y-4 p-4 bg-gray-500 m-auto items-center">
+        {/* 静态文件 basePath 为 public */}
         <Image src="/img/vercel.svg" alt="logo" width={141} height={32} />
 
         <div className="p-4 rounded bg-slate-50 flex flex-col space-y-4 ">

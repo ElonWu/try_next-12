@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { User } from '../../../models/user';
-import { getUsers } from '../../../services/user';
+import { User } from '@models/user';
+import { getUsers } from '@services/user';
 
 type UserRes = User[];
 
