@@ -6,20 +6,21 @@ import { NextPage } from 'next';
 import { useCallback, useState } from 'react';
 
 const Home: NextPage = () => {
-  const [message, setMessage] = useState<string>('no message');
+  // const [message, setMessage] = useState<string>('no message');
 
-  const { isOpen, send, close } = useWebSocket<string>({
-    url: '/api/ws',
-    onMessage: setMessage,
-  });
+  // const { isOpen, send, close } = useWebSocket<string>({
+  //   url: '/api/ws',
+  //   onMessage: setMessage,
+  // });
 
-  const onSend = async (message: string) => {
-    await local.post('/api/ws/chat', { message });
-  };
+  // const onSend = async (message: string) => {
+  //   await local.post('/api/ws/chat', { message });
+  // };
 
   return (
     <UserLayout title="测试信息推送">
-      <div>{isOpen ? <h4>最新消息:「{message}」</h4> : <p>连接中...</p>}</div>
+      <div>Serverless 不支持 websocket 或者 stream</div>
+      {/* <div>{isOpen ? <h4>最新消息:「{message}」</h4> : <p>连接中...</p>}</div>
 
       <div>
         <Form onSubmit={(values) => onSend(values?.message)}>
@@ -28,7 +29,7 @@ const Home: NextPage = () => {
             提交
           </Button>
         </Form>
-      </div>
+      </div> */}
     </UserLayout>
   );
 };
