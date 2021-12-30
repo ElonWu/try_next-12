@@ -1,4 +1,4 @@
-name: 30-minute-cron
+name: test-cron
 on:
   schedule:
     - cron: '40 18 * * *'
