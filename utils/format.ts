@@ -62,3 +62,15 @@ export const readPreviewUrl: (file: File) => void = (file) => {
 // 数字精度问题
 export const strip = (num: number, precision: number = 12): number =>
   +parseFloat(num.toPrecision(precision));
+
+// 生成指定长度的随机字符串
+export const generateRandomString = (length: number) => {
+  let text = '';
+  const possible =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+  for (let i = 0; i < length; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
+};

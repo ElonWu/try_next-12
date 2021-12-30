@@ -2,33 +2,30 @@ import type { GetServerSidePropsContext, NextPage } from 'next';
 
 // omponent
 import UserLayout from '@layouts/user';
-import { Notification } from '@douyinfe/semi-ui';
-import UserForm from '@components/UserForm';
+import { Button } from '@douyinfe/semi-ui';
 
 // util
 import { useCallback } from 'react';
 
-import { User } from '@models/user';
 import { local } from '@utils/local_request';
-import { useRouter } from 'next/router';
 import { withSessionSsr } from '@lib/session';
+import Router, { useRouter } from 'next/router';
 
-const Login: NextPage = () => {
+const Login: NextPage = ({ profile }: any) => {
   const router = useRouter();
 
-  const onLogin = useCallback(
-    async (values) => {
-      await local.post<User>('/api/user/login', values);
-      Notification.success({ content: '成功登录', duration: 5 });
-      router.replace('/');
-    },
-    [router],
-  );
+  const onLogin = useCallback(async () => {
+    const res = await local.get<{ uri: string }>('/api/spotify/login');
+
+    if (res?.uri) window.open(res.uri, '__blank');
+  }, []);
 
   return (
     <UserLayout title="用户登录">
       <div className="flex items-center justify-center h-screen">
-        <UserForm onChange={onLogin} />
+        {profile ? '已登录' : '未登录'}
+
+        {!profile && <Button onClick={onLogin}>登录</Button>}
       </div>
     </UserLayout>
   );
@@ -40,19 +37,18 @@ export default Login;
 export const getServerSideProps = withSessionSsr(
   async ({ req }: GetServerSidePropsContext) => {
     // @ts-ignore
-    const user = req.session.user;
+    const profile = req.session?.spotify?.profile;
 
-    // 已经登录
-    if (user) {
+    if (!profile)
       return {
-        redirect: {
-          destination: '/',
-          permanent: true,
-        },
+        props: {},
       };
-    }
 
     // 不能 return 空
-    return { props: {} };
+    return {
+      props: {
+        profile,
+      },
+    };
   },
 );
