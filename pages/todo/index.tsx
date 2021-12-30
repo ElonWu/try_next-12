@@ -8,7 +8,7 @@ import { useCallback, useMemo } from 'react';
 import TodoList from '@components/TodoList';
 import TodoForm from '@components/TodoForm';
 import useApi from '@hooks/useApi';
-import { local } from '@utils/request';
+import { local } from '@utils/local_request';
 import { Notification } from '@douyinfe/semi-ui';
 import { TodoWithCreator } from '@models/todo';
 

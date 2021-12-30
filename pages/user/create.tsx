@@ -7,7 +7,7 @@ import UserForm from '@components/UserForm';
 
 // util
 import { useCallback } from 'react';
-import { local } from '@utils/request';
+import { local } from '@utils/local_request';
 import { useRouter } from 'next/router';
 
 const UserCreate: NextPage = () => {

@@ -1,7 +1,7 @@
 import { Form, Button } from '@douyinfe/semi-ui';
 import useWebSocket from '@hooks/useSocket';
 import UserLayout from '@layouts/user';
-import { local } from '@utils/request';
+import { local } from '@utils/local_request';
 import { NextPage } from 'next';
 import { useCallback, useState } from 'react';
 

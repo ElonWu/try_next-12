@@ -6,7 +6,7 @@ import UserLayout from '@layouts/user';
 import { withSessionSsr } from '@lib/session';
 import { Button, Notification } from '@douyinfe/semi-ui';
 import { useCallback } from 'react';
-import { local } from '@utils/request';
+import { local } from '@utils/local_request';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 
