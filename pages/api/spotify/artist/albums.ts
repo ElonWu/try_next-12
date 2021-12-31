@@ -1,5 +1,5 @@
 import { withSessionRoute } from '@lib/session';
-import { getSpotifyFollowArtist } from '@services/spotify/profile';
+import { getSpotifyArtistAlbums } from '@services/spotify/artist';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -11,8 +11,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // @ts-ignore
   const access_token = req.session?.spotify?.access_token;
 
-  const response = await getSpotifyFollowArtist(access_token, {
-    type: 'artist',
+  const id = req.query.artistId as string;
+
+  const response = await getSpotifyArtistAlbums(access_token, {
+    id,
   });
 
   const data = await response.json();
@@ -24,7 +26,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  res.status(200).json({ list: data?.artists?.items || [] });
+  res.status(200).json({ list: data.items || [] });
 };
 
 export default withSessionRoute(handler);

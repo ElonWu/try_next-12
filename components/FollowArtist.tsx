@@ -1,10 +1,12 @@
 import React, { useMemo } from 'react';
-import { Empty } from '@douyinfe/semi-ui';
 import useApi from '@hooks/useApi';
-import Image from 'next/image';
+import { Empty } from '@douyinfe/semi-ui';
+import { useRouter } from 'next/router';
 
 const FollowArtist = () => {
-  const { data } = useApi<any, { list: any[] }>('/api/spotify/artist/follow');
+  const router = useRouter();
+
+  const { data } = useApi<{ list: any[] }>('/api/spotify/artist/follow');
 
   const list: any[] = useMemo(
     () => (Array.isArray(data?.list) ? (data?.list as any[]) : []),
@@ -25,6 +27,7 @@ const FollowArtist = () => {
           <div
             key={artist?.id}
             className="flex bg-white shadow-md p-4 items-center justify-between rounded-md"
+            onClick={() => router.push(`/spotify/artist/${artist?.id}`)}
           >
             <h2>{artist?.name}</h2>
 

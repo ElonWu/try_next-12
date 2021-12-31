@@ -1,9 +1,11 @@
+import { queryParams } from '@utils/format';
 import useSWR, { SWRResponse } from 'swr';
 
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
+const fetcher = (url: string, params: any) =>
+  fetch(url + queryParams(params)).then((r) => r.json());
 
-function useApi<Req, Res>(path: string, params?: Req): SWRResponse<Res, Error> {
-  return useSWR<Res>(path, fetcher, params);
+function useApi<Res>(path: string): SWRResponse<Res, Error> {
+  return useSWR<Res>(path, fetcher);
 }
 
 export default useApi;

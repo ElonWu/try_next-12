@@ -13,7 +13,7 @@ import { Notification } from '@douyinfe/semi-ui';
 import { TodoWithCreator } from '@models/todo';
 
 const UserCreate: NextPage = () => {
-  const { data, mutate: reload } = useApi<null, TodoWithCreator>('/api/todo');
+  const { data, mutate: reload } = useApi<TodoWithCreator>('/api/todo');
 
   const list = useMemo(() => (Array.isArray(data) ? data : []), [data]);
 
