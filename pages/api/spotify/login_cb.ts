@@ -3,7 +3,7 @@ import { withSessionRoute } from '@lib/session';
 import { getSpotifyProfile } from '@services/spotify/profile';
 import { queryParams } from '@utils/format';
 
-const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI } =
+const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_CALLBACK_URI } =
   process.env;
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -26,27 +26,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // @ts-ignore
   const body = new URLSearchParams({
     code,
-    redirect_uri: SPOTIFY_REDIRECT_URI,
+    redirect_uri: SPOTIFY_CALLBACK_URI,
     grant_type: 'authorization_code',
-  });
-
-  // const body = `code=${encodeURIComponent(
-  //   code as string,
-  // )}&redirect_uri=${encodeURIComponent(
-  //   SPOTIFY_REDIRECT_URI as string,
-  // )}&grant_type=authorization_code`;
-
-  // const body = JSON.stringify({
-  //   code,
-  //   redirect_uri: SPOTIFY_REDIRECT_URI,
-  //   grant_type: 'authorization_code',
-  // });
-
-  console.log({
-    Authorization,
-    code,
-    SPOTIFY_REDIRECT_URI,
-    body,
   });
 
   const response: any = await fetch(`https://accounts.spotify.com/api/token`, {
@@ -60,21 +41,31 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const data = await response.json();
 
-  console.log('spotify response', data);
-  res.status(200).json(data);
-  // const profile = await getSpotifyProfile(response?.access_token);
+  // @ts-ignore
+  req.session.spotify = Object.assign({}, req.session.spotify, {
+    state,
+    expires_in: data?.expires_in,
+    access_token: data?.access_token,
+    refresh_token: data?.refresh_token,
+  });
+  // 保存鉴权
+  await req.session.save();
 
-  // // @ts-ignore
-  // req.session.spotify = Object.assign({}, req.session.spotify, {
-  //   state,
-  //   access_token: response?.access_token,
-  //   refresh_token: response?.refresh_token,
-  //   profile,
-  // });
+  const profileResponse = await getSpotifyProfile(data?.access_token);
 
-  // req.session.save();
+  const profile = await profileResponse.json();
 
-  res.end();
+  // 保存个人信息
+  if (profile) {
+    // @ts-ignore
+    req.session.spotify = Object.assign({}, req.session.spotify, {
+      profile,
+    });
+
+    await req.session.save();
+  }
+
+  res.redirect('/spotify');
 };
 
 export default withSessionRoute(handler);
