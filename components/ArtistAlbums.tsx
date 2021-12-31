@@ -17,20 +17,17 @@ const ArtistAlbums = ({ artistId }: { artistId: string }) => {
   }
 
   return (
-    <div className="flex flex-nowrap w-full overflow-auto space-x-4">
+    <div className="flex flex-nowrap w-full overflow-auto space-x-4 p-2">
       {list.map(({ id, name, images, release_date, total_tracks }) => (
         <div
           key={id}
-          className="p-4 bg-white rounded-md shadow-md grid  shrink-0"
-          style={{ width: 280 }}
+          className="h-40 w-72 shrink-0 rounded-md overflow-hidden bg-no-repeat bg-cover bg-center"
+          style={{ backgroundImage: `url(${images?.[0]?.url})` }}
         >
-          <div className="w-16 h-16 rounded-full border-4 border-teal-600 shadow-md overflow-hidden">
-            <img src={images?.[0]?.url} alt="Album" />
+          <div className="h-full shadow-md p-4 grid items-center bg-gradient-to-br from-slate-500/60 to-slate-900/60 ">
+            <h4 className="text-2xl font-bold text-white">{name}</h4>
+            <p className="text-xs text-slate-200 ">发行日期：{release_date}</p>
           </div>
-
-          <h4>{name}</h4>
-          <p>歌曲数目：{total_tracks}</p>
-          <p>发行日期：{release_date}</p>
         </div>
       ))}
     </div>

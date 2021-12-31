@@ -4,7 +4,7 @@ import { NextApiResponseServerIO } from '../../../types/socket';
 const handler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
   if (req.method === 'POST') {
     // get message
-    const { message } = req.body;
+    const { message, from, to } = req.body;
 
     // dispatch to channel "message"
     res?.socket?.server?.io?.emit('message', message);

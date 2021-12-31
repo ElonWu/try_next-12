@@ -9,15 +9,24 @@ import { useCallback } from 'react';
 
 import { local } from '@utils/local_request';
 import { withSessionSsr } from '@lib/session';
-import Router, { useRouter } from 'next/router';
 import FollowArtist from '@components/FollowArtist';
+import { Notification } from '@douyinfe/semi-ui';
+import { useRouter } from 'next/router';
 
 const Login: NextPage = ({ profile }: any) => {
+  const router = useRouter();
+
   const onLogin = useCallback(async () => {
     const res = await local.get<{ uri: string }>('/api/spotify/login');
 
     if (res?.uri) window.location.href = res.uri;
   }, []);
+
+  const onLogout = useCallback(async () => {
+    await local.post('/api/spotify/logout');
+    Notification.success({ content: '已登出', duration: 5 });
+    router.reload();
+  }, [router]);
 
   return (
     <UserLayout title="用户登录">
@@ -30,6 +39,8 @@ const Login: NextPage = ({ profile }: any) => {
               <h4>{profile?.display_name}</h4>
               <p>{profile?.email}</p>
               <p>账号地区：{profile?.country}</p>
+
+              <Button onClick={onLogout}>登出</Button>
             </div>
 
             <FollowArtist />

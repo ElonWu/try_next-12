@@ -26,11 +26,13 @@ const ArtistedDetail: NextPage = () => {
     <UserLayout title="歌手详情">
       <div className="h-screen w-full overflow-y-auto">
         <Button onClick={() => router.back()}>返回</Button>
-        {/* <ArtistProfile artistId={artistId as string} /> */}
-        <h4>专辑</h4>
+
+        <ArtistProfile artistId={artistId as string} />
+
+        <h4 className="p-4 mt-2">专辑</h4>
         <ArtistAlbums artistId={artistId as string} />
 
-        <h4>热门歌曲</h4>
+        <h4 className="p-4 mt-2">热门歌曲</h4>
         <ArtistTopTracks artistId={artistId as string} />
       </div>
     </UserLayout>

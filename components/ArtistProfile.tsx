@@ -12,11 +12,10 @@ const ArtistProfile = ({ artistId }: { artistId: string }) => {
   }
 
   return (
-    <div
-      className="grid gap-4"
-      style={{ gridTemplateColumns: `repeat(auto-fit, minmax(240px, 1fr))` }}
-    >
-      {data?.name}
+    <div className="flex p-2">
+      <div className="w-full bg-white rounded-md shadow-md p-4">
+        <h4>{data?.name}</h4>
+      </div>
     </div>
   );
 };

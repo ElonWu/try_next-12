@@ -1,3 +1,5 @@
+const animationConfig = require('./tailwind.config.animation');
+
 module.exports = {
   content: [
     './pages/**/*.{js,ts,jsx,tsx}',
@@ -5,7 +7,10 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      keyframes: animationConfig.keyframes,
+      animation: animationConfig.animation,
+    },
   },
   plugins: [],
 };
