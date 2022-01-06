@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { withSessionRoute } from '@lib/session';
-import { getSpotifyToken, getSpotifyProfile } from '@services/spotify/profile';
+import { getSpotifyToken, getSpotifyProfile } from '@services/spotify/user';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'GET') {
@@ -24,21 +24,20 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // @ts-ignore
   req.session.spotify = Object.assign({}, req.session.spotify, {
     state,
+    last_update: new Date(),
     expires_in: data?.expires_in,
     access_token: data?.access_token,
     refresh_token: data?.refresh_token,
   });
   await req.session.save();
 
-  const profileResponse = await getSpotifyProfile(data?.access_token);
-
-  const profile = await profileResponse.json();
+  const user = await getSpotifyProfile(data?.access_token);
 
   // 保存个人信息
-  if (profile) {
+  if (user) {
     // @ts-ignore
     req.session.spotify = Object.assign({}, req.session.spotify, {
-      profile,
+      profile: user,
     });
 
     await req.session.save();

@@ -15,7 +15,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   // @ts-ignore
   req.session.spotify = { state };
-  req.session.save();
+  await req.session.save();
 
   const uri =
     'https://accounts.spotify.com/authorize' +

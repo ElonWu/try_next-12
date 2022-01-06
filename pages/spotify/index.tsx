@@ -8,10 +8,10 @@ import { Button } from '@douyinfe/semi-ui';
 import { useCallback } from 'react';
 
 import { local } from '@utils/local_request';
-import { withSessionSsr } from '@lib/session';
 import FollowArtist from '@components/FollowArtist';
 import { Notification } from '@douyinfe/semi-ui';
 import { useRouter } from 'next/router';
+import { SpotifyLoginGetServerSideProps } from '@services/spotify/spotifyGetServerSideProps';
 
 const Login: NextPage = ({ profile }: any) => {
   const router = useRouter();
@@ -41,6 +41,9 @@ const Login: NextPage = ({ profile }: any) => {
               <p>账号地区：{profile?.country}</p>
 
               <Button onClick={onLogout}>登出</Button>
+              <Button onClick={() => router.push('/spotify/search')}>
+                搜索
+              </Button>
             </div>
 
             <FollowArtist />
@@ -54,24 +57,4 @@ const Login: NextPage = ({ profile }: any) => {
 export default Login;
 
 // run-time 实时根据 params 查询和渲染
-export const getServerSideProps = withSessionSsr(
-  async ({ req }: GetServerSidePropsContext) => {
-    // @ts-ignore
-    const profile = req.session?.spotify?.profile;
-
-    // @ts-ignore
-    console.log(req.session.spotify);
-
-    if (!profile)
-      return {
-        props: {},
-      };
-
-    // 不能 return 空
-    return {
-      props: {
-        profile,
-      },
-    };
-  },
-);
+export const getServerSideProps = SpotifyLoginGetServerSideProps;

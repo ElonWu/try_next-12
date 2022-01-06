@@ -1,5 +1,5 @@
 import { queryParams } from '@utils/format';
-import { Request } from '@utils/request';
+import { Artist } from '@type/spotify';
 
 const SpotifyBase = `https://api.spotify.com/v1`;
 
@@ -7,14 +7,14 @@ const SpotifyBase = `https://api.spotify.com/v1`;
  *
  * @param access_token
  * @param params
- * @returns Promise<FollowArtists>
+ * @returns Promise<Artist[]>
  *
  * @description 获取歌手信息
  */
 export const getSpotifyArtistProfile = (
   access_token: string,
   params: { id: string },
-) => {
+): Promise<Response> => {
   return fetch(`${SpotifyBase}/artists/${params.id}`, {
     headers: {
       Accept: 'application/json',

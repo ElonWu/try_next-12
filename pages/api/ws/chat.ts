@@ -1,5 +1,5 @@
 import { NextApiRequest } from 'next';
-import { NextApiResponseServerIO } from '../../../types/socket';
+import { NextApiResponseServerIO } from '@type/socket';
 
 const handler = (req: NextApiRequest, res: NextApiResponseServerIO) => {
   if (req.method === 'POST') {

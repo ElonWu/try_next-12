@@ -1,6 +1,5 @@
 import { withSessionRoute } from '@lib/session';
-import { getSpotifyFollowArtist } from '@services/spotify/user';
-import { SpotifyError } from '@type/spotify';
+import { getSpotifyAlbum } from '@services/spotify/album';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -9,13 +8,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  try {
-    // @ts-ignore
-    const data = await getSpotifyFollowArtist(req.session?.spotify, {
-      type: 'artist',
-    });
+  const id = req.query.albumId as string;
 
-    res.status(200).json({ list: data });
+  // @ts-ignore
+  const album = await getSpotifyAlbum(req.session?.spotify, { id });
+
+  try {
+    res.status(200).json(album);
   } catch (error: any) {
     res
       .status(error?.status || 400)
