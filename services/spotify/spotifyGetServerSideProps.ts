@@ -8,9 +8,6 @@ export const SpotifyGetServerSideProps = withSessionSsr(
     // @ts-ignore
     const profile = req.session?.spotify?.profile;
 
-    // @ts-ignore
-    console.log(req.session.spotify);
-
     // 无登录记录
     if (!profile)
       return {
@@ -36,10 +33,14 @@ export const SpotifyGetServerSideProps = withSessionSsr(
       };
     }
 
+    // @ts-ignore
+    const access_token = req.session?.spotify?.access_token;
+
     // 不能 return 空
     return {
       props: {
         profile,
+        access_token,
       },
     };
   },

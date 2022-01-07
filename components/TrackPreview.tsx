@@ -3,6 +3,7 @@ import type { LegacyRef } from 'react';
 import { Empty } from '@douyinfe/semi-ui';
 import { Track } from '@type/spotify';
 import { IconFlag, IconPause, IconPlay } from '@douyinfe/semi-icons';
+import { useRouter } from 'next/router';
 
 const TrackPreview = ({
   track,
@@ -13,6 +14,8 @@ const TrackPreview = ({
   playing: boolean;
   onPlay: (activeId: string | null) => void;
 }) => {
+  const router = useRouter();
+
   const { hasImages, hasFlag } = useMemo(() => {
     return {
       hasImages: track?.album?.images,
@@ -25,7 +28,10 @@ const TrackPreview = ({
   }
 
   return (
-    <div className="flex-shrink-0 p-4 bg-white rounded-md shadow-md flex items-center space-x-4">
+    <div
+      className="flex-shrink-0 p-4 bg-white rounded-md shadow-md flex items-center space-x-4"
+      onClick={() => router.push(`/spotify/track/${track?.id}`)}
+    >
       {hasImages && (
         <div
           className={`w-16 h-16 rounded-full border-2 border-purple-600 shadow-md overflow-hidden ${
@@ -73,7 +79,12 @@ const Player = ({
   }, [playing]);
 
   return (
-    <div onClick={() => onPlay(!playing)}>
+    <div
+      onClick={(e) => {
+        e.stopPropagation();
+        onPlay(!playing);
+      }}
+    >
       <audio
         ref={ref as LegacyRef<HTMLAudioElement>}
         autoPlay={false}
