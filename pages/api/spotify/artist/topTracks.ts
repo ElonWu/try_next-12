@@ -29,7 +29,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  res.status(200).json({ list: data.tracks || [] });
+  res.status(200).json(data.tracks || []);
 };
 
 export default withSessionRoute(handler);

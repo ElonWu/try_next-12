@@ -20,25 +20,24 @@ const FollowArtist = () => {
   }
 
   return (
-    <div
-      className="grid gap-4"
-      style={{ gridTemplateColumns: `repeat(auto-fit, minmax(240px, 1fr))` }}
-    >
-      {list.map((artist) => {
-        return (
-          <div
-            key={artist.id}
-            className="flex bg-white shadow-md p-4 items-center justify-between rounded-md cursor-pointer"
-            onClick={() => router.push(`/spotify/artist/${artist.id}`)}
-          >
-            <h2>{artist.name}</h2>
-
-            <div className="w-16 h-16 rounded-full border-4 border-teal-600 shadow-md overflow-hidden">
-              <img src={artist.images?.[0]?.url as string} alt="Artist" />
+    <div className="flex flex-col items-stretch space-y-4">
+      <h4>关注歌手</h4>
+      <div className="flex flex-nowrap overflow-auto space-x-4 p-4">
+        {list.map((artist) => {
+          return (
+            <div
+              key={artist.id}
+              className="shrink-0 flex p-4 items-end justify-start rounded-md shadow-md cursor-pointer bg-no-repeat bg-cover bg-center w-16 h-24"
+              onClick={() => router.push(`/spotify/artist/${artist.id}`)}
+              style={{
+                backgroundImage: `url(${artist.images?.[0]?.url})`,
+              }}
+            >
+              {/* <h2>{artist.name}</h2> */}
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 };

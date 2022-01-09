@@ -12,7 +12,7 @@ const UserLayout: NextPage<{ title: string; children?: ReactNode }> = ({
         <title>{title}</title>
       </Head>
 
-      <div className="p-4 bg-slate-50 overflow-x-hidden overflow-y-scroll min-h-screen">
+      <div className="bg-slate-50 overflow-x-hidden overflow-y-scroll min-h-screen">
         {children}
       </div>
     </>

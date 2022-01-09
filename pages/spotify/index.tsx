@@ -12,6 +12,7 @@ import FollowArtist from '@components/FollowArtist';
 import { Notification } from '@douyinfe/semi-ui';
 import { useRouter } from 'next/router';
 import { SpotifyLoginGetServerSideProps } from '@services/spotify/spotifyGetServerSideProps';
+import PlaylistOfMine from '@components/PlaylistOfMine';
 
 const Login: NextPage = ({ profile }: any) => {
   const router = useRouter();
@@ -47,6 +48,8 @@ const Login: NextPage = ({ profile }: any) => {
             </div>
 
             <FollowArtist />
+
+            <PlaylistOfMine />
           </div>
         )}
       </div>

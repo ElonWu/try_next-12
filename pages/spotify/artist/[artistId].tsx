@@ -14,7 +14,7 @@ import { useRouter } from 'next/router';
 
 import { SpotifyGetServerSideProps } from '@services/spotify/spotifyGetServerSideProps';
 
-const ArtistedDetail: NextPage = () => {
+const ArtistDetail: NextPage = () => {
   const router = useRouter();
 
   const artistId = useMemo(() => router?.query?.artistId, [router?.query]);
@@ -40,7 +40,7 @@ const ArtistedDetail: NextPage = () => {
   );
 };
 
-export default ArtistedDetail;
+export default ArtistDetail;
 
 // run-time 实时根据 params 查询和渲染
 export const getServerSideProps = SpotifyGetServerSideProps;

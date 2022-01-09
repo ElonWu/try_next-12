@@ -45,6 +45,7 @@ export interface Album {
   uri: string;
   album_group: 'compilation';
   artists: Artist[];
+  tracks: List<Track>;
 }
 
 export interface Artist {
@@ -93,6 +94,15 @@ export interface List<T> {
   items: T[];
 }
 
+export interface PlaylistTrack {
+  added_at: string;
+  added_by: User;
+  is_local: boolean;
+  primary_color: string | null;
+  track: Track;
+  video_thumbnail: { url: string | null };
+}
+
 export interface Playlist {
   collaborative: true;
   description: string;
@@ -110,7 +120,7 @@ export interface Playlist {
   owner: User;
   public: true;
   snapshot_id: string;
-  tracks: List<Track>;
+  tracks: List<PlaylistTrack>;
   type: string;
   uri: string;
 }

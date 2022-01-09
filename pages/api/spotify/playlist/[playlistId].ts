@@ -1,25 +1,20 @@
 import { withSessionRoute } from '@lib/session';
-import { playSpotifyTrack } from '@services/spotify/track';
+import { getSpotifyPlaylistDetail } from '@services/spotify/playlist';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method !== 'PUT') {
+  if (req.method !== 'GET') {
     res.status(405).json({ message: 'Method Not Allowed' });
     return;
   }
 
-  const { device_id } = req.query;
-  const { uri } = req.body;
+  const id = req.query.playlistId as string;
+
+  // @ts-ignore
+  const playlist = await getSpotifyPlaylistDetail(req.session?.spotify, { id });
 
   try {
-    await playSpotifyTrack(
-      // @ts-ignore
-      req.session?.spotify,
-      {
-        device_id: device_id as string,
-        uris: [uri],
-      },
-    );
+    res.status(200).json(playlist);
   } catch (error: any) {
     res
       .status(error?.status || 400)

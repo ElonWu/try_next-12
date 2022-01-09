@@ -3,13 +3,15 @@ import useApi from '@hooks/useApi';
 import { Empty } from '@douyinfe/semi-ui';
 import TrackPreview from './TrackPreview';
 
+import { List, Track } from '@type/spotify';
+
 const ArtistTopTracks = ({ artistId }: { artistId: string }) => {
-  const { data } = useApi<{ list: any[] }>(
+  const { data } = useApi<Track[]>(
     `/api/spotify/artist/topTracks?artistId=${artistId}`,
   );
 
-  const list: any[] = useMemo(
-    () => (Array.isArray(data?.list) ? (data?.list as any[]) : []),
+  const list: Track[] = useMemo(
+    () => (Array.isArray(data) ? (data as Track[]) : []),
     [data],
   );
 

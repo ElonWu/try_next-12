@@ -2,7 +2,7 @@ import type { GetServerSidePropsContext, NextPage } from 'next';
 
 // omponent
 import UserLayout from '@layouts/user';
-import { Button, Empty } from '@douyinfe/semi-ui';
+import { Button, Empty, IconButton } from '@douyinfe/semi-ui';
 
 // util
 import {
@@ -21,7 +21,16 @@ import { queryParams } from '@utils/format';
 import { local } from '@utils/local_request';
 import { PlayState, Track } from '@type/spotify';
 import TrackPlay from '@components/TrackPlay';
-import { IconPause, IconPlay } from '@douyinfe/semi-icons';
+import {
+  IconArrowLeft,
+  IconArrowRight,
+  IconDoubleChevronLeft,
+  IconDoubleChevronRight,
+  IconPause,
+  IconPlay,
+} from '@douyinfe/semi-icons';
+
+const { SPOTIFY_PLAYER_NAME } = process.env;
 
 interface Player {
   connect: () => Promise<any>;
@@ -37,7 +46,7 @@ interface Player {
 const TrackDetail: NextPage<{ access_token?: string }> = ({ access_token }) => {
   const router = useRouter();
 
-  const trackId = useMemo(() => router?.query?.trackId, [router?.query]);
+  const uri = useMemo(() => router?.query?.uri, [router?.query]);
 
   const playerRef = useRef<Player | null>();
 
@@ -47,7 +56,7 @@ const TrackDetail: NextPage<{ access_token?: string }> = ({ access_token }) => {
 
   const onReady = useCallback(async ({ device_id }: { device_id: string }) => {
     await local.put('/api/spotify/play' + queryParams({ device_id }), {
-      trackId,
+      uri,
     });
   }, []);
 
@@ -90,7 +99,7 @@ const TrackDetail: NextPage<{ access_token?: string }> = ({ access_token }) => {
     window.onSpotifyWebPlaybackSDKReady = async () => {
       // @ts-ignore
       const player: Player = new Spotify.Player({
-        name: 'ElonWU Web Player',
+        name: SPOTIFY_PLAYER_NAME,
         getOAuthToken: (cb: any) => cb(access_token),
       });
 
@@ -141,10 +150,7 @@ const TrackDetail: NextPage<{ access_token?: string }> = ({ access_token }) => {
     };
   }, [playState]);
 
-  const title = useMemo(
-    () => (track?.name ? `歌曲详情 - ${track.name}` : '歌曲详情'),
-    [track],
-  );
+  const title = useMemo(() => `播放 - ${track?.name || '-'}`, [track]);
 
   return (
     <UserLayout title={title}>
@@ -154,28 +160,45 @@ const TrackDetail: NextPage<{ access_token?: string }> = ({ access_token }) => {
         ) : !track ? (
           <Empty title="未获得详情" />
         ) : (
-          <div className="flex flex-col sapce-y-4">
-            <TrackPlay track={track} />
+          <div className="flex flex-col items-stretch h-full">
+            <div className=" flex flex-col p-2">
+              <h4 className="text-xl font-bold text-teal-400">{track?.name}</h4>
+              <h4 className="text-xl font-bold text-teal-400">
+                {track?.artists[0]?.name}
+              </h4>
+            </div>
 
-            <div
-              className="relative h-4 w-full rounded-md"
-              style={{
-                backgroundImage: `linear-gradient(to right, green ${position}%, #999999 ${position}%)`,
-              }}
-              onClick={onResetPosition}
-            ></div>
+            <div className="flex-1 flex items-center justify-center">
+              <TrackPlay track={track} />
+            </div>
+
+            <div className="controller p-4">
+              <div
+                className="relative h-4 rounded-md"
+                style={{
+                  backgroundImage: `linear-gradient(to right, green ${position}%, #999999 ${position}%)`,
+                }}
+                onClick={onResetPosition}
+              />
+
+              <div className="flex items-center justify-center space-x-4">
+                <IconButton
+                  icon={<IconDoubleChevronLeft />}
+                  onClick={() => playerRef.current?.previousTrack()}
+                />
+
+                <Button onClick={() => playerRef.current?.togglePlay()}>
+                  {playState?.paused ? <IconPlay /> : <IconPause />}
+                </Button>
+
+                <IconButton
+                  icon={<IconDoubleChevronRight />}
+                  onClick={() => playerRef.current?.nextTrack()}
+                />
+              </div>
+            </div>
           </div>
         )}
-
-        <div className="flex items-center justify-center space-x-4">
-          <Button onClick={() => playerRef.current?.previousTrack()}>
-            上一首
-          </Button>
-          <Button onClick={() => playerRef.current?.togglePlay()}>
-            {playState?.paused ? <IconPlay /> : <IconPause />}
-          </Button>
-          <Button onClick={() => playerRef.current?.nextTrack()}>下一首</Button>
-        </div>
       </div>
     </UserLayout>
   );

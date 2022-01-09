@@ -11,7 +11,7 @@ import { useRouter } from 'next/router';
 import useApi from '@hooks/useApi';
 import { SpotifyGetServerSideProps } from '@services/spotify/spotifyGetServerSideProps';
 import TrackPreview from '@components/TrackPreview';
-import { Track } from '@type/spotify';
+import { Album, Track } from '@type/spotify';
 import AlbumPreview from '@components/AlbumPreview';
 
 const ArtistedDetail: NextPage = () => {
@@ -23,7 +23,7 @@ const ArtistedDetail: NextPage = () => {
     if (!albumId) router.back();
   }, [albumId, router]);
 
-  const { data } = useApi<any>(`/api/spotify/album/${albumId}`);
+  const { data } = useApi<Album>(`/api/spotify/album/${albumId}`);
 
   const [activeId, setActiveId] = useState<string | null>();
 
