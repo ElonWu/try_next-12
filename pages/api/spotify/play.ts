@@ -20,6 +20,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         uris: [uri],
       },
     );
+    res.status(200).end();
   } catch (error: any) {
     res
       .status(error?.status || 400)
