@@ -193,3 +193,23 @@ interface SearchResponseItem<T> {
   type: SpotifySerchType;
   list: T[];
 }
+
+export interface PlayState {
+  context: { uri: string; metadata: any };
+  disallows: { skipping_prev: boolean; pausing: boolean };
+  duration: number;
+  loading: boolean;
+  paused: boolean;
+  playback_features: { hifi_status: string; change_playback_speed: boolean };
+  playback_quality: string;
+  playback_speed: number;
+  position: number;
+  repeat_mode: number;
+  shuffle: false;
+  timestamp: number;
+  track_window: {
+    current_track: Track;
+    next_tracks: Track[];
+    previous_tracks: Track[];
+  };
+}

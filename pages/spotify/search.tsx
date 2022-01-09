@@ -7,9 +7,7 @@ import { IconSearch } from '@douyinfe/semi-icons';
 
 // util
 import { useCallback, useEffect, useState } from 'react';
-import type { FC } from 'react';
-
-import { useRouter } from 'next/router';
+import type { FC, KeyboardEvent } from 'react';
 
 import { SpotifyGetServerSideProps } from '@services/spotify/spotifyGetServerSideProps';
 import { debounce } from 'lodash';
@@ -46,6 +44,9 @@ const SearchSpotify: NextPage = () => {
             value={search}
             placeholder="请查找关键字"
             onChange={(value: string) => setSearch(value)}
+            onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+              if (e.code === 'Enter') onSearch();
+            }}
           />
           <IconButton icon={<IconSearch />} onClick={onSearch} />
         </div>
