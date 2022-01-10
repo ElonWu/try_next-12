@@ -1,19 +1,12 @@
 import type { GetServerSidePropsContext, NextPage } from 'next';
+import { useCallback, useMemo, useEffect, useState, useRef } from 'react';
+import type { Dispatch, SetStateAction, MouseEventHandler } from 'react';
 
 // omponent
 import UserLayout from '@layouts/user';
 import { Button, Empty, IconButton } from '@douyinfe/semi-ui';
 
 // util
-import {
-  useCallback,
-  useMemo,
-  useEffect,
-  useState,
-  MouseEventHandler,
-  useRef,
-} from 'react';
-
 import { useRouter } from 'next/router';
 
 import { SpotifyGetServerSideProps } from '@services/spotify/spotifyGetServerSideProps';
@@ -78,23 +71,6 @@ const TrackDetail: NextPage<{ access_token?: string }> = ({ access_token }) => {
     setTrack(current_track);
   }, []);
 
-  const onResetPosition: MouseEventHandler<HTMLDivElement> = useCallback(
-    async (e: any) => {
-      const player = playerRef.current;
-
-      if (!player) return;
-
-      const { width, x } = e.target.getBoundingClientRect();
-
-      // 控制范围
-      const percent = Math.max(0, Math.min(100, (e.clientX - x) / width));
-      await player.seek(percent * (playState?.duration || 0));
-
-      return;
-    },
-    [playState],
-  );
-
   useEffect(() => {
     // @ts-ignore
     window.onSpotifyWebPlaybackSDKReady = async () => {
@@ -130,29 +106,6 @@ const TrackDetail: NextPage<{ access_token?: string }> = ({ access_token }) => {
 
   useInsertScript('https://sdk.scdn.co/spotify-player.js');
 
-  const timerRef = useRef<NodeJS.Timer | null>();
-
-  useEffect(() => {
-    if (playState?.paused !== false) return;
-
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-
-    timerRef.current = setInterval(() => {
-      // 直接转换为百分比位置
-      setPosition((prev) => prev + (1000 / playState.duration) * 100); // 1000ms / duration 转换为百分比
-    }, 1000);
-
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, [playState]);
-
   const title = useMemo(() => `播放 - ${track?.name || '-'}`, [track]);
 
   return (
@@ -175,47 +128,12 @@ const TrackDetail: NextPage<{ access_token?: string }> = ({ access_token }) => {
               </h4>
             </div>
 
-            <div className="controller p-4 flex flex-col items-stretch justify-start space-y-4">
-              <div
-                className="relative h-4 rounded-md"
-                style={{
-                  backgroundImage: `linear-gradient(to right, green ${position}%, #999999 ${position}%)`,
-                }}
-                onClick={onResetPosition}
-              />
-
-              <div className="flex items-center justify-center space-x-4">
-                <IconButton
-                  icon={<IconDoubleChevronLeft size="extra-large" />}
-                  onClick={() => playerRef.current?.previousTrack()}
-                />
-
-                {playState?.paused ? (
-                  <IconButton
-                    icon={
-                      <IconPlay
-                        size="extra-large"
-                        onClick={() => playerRef.current?.togglePlay()}
-                      />
-                    }
-                  />
-                ) : (
-                  <IconButton
-                    icon={
-                      <IconPause
-                        size="extra-large"
-                        onClick={() => playerRef.current?.pause()}
-                      />
-                    }
-                  />
-                )}
-
-                <IconButton
-                  icon={<IconDoubleChevronRight size="extra-large" />}
-                  onClick={() => playerRef.current?.nextTrack()}
-                />
-              </div>
-            </div>
+            <PlayerController
+              player={playerRef.current}
+              playState={playState}
+              position={position}
+              setPosition={setPosition}
+            />
           </div>
         )}
       </div>
@@ -249,4 +167,93 @@ const useInsertScript = (url: string) => {
     console.log('2. append');
     document.body.appendChild(script);
   }, []);
+};
+
+const PlayerController = ({
+  player,
+  playState,
+  position,
+  setPosition,
+}: {
+  player: Player;
+  position: number;
+  playState?: PlayState;
+  setPosition: Dispatch<SetStateAction<number>>;
+}) => {
+  const onResetPosition: MouseEventHandler<HTMLDivElement> = useCallback(
+    async (e: any) => {
+      if (!player) return;
+
+      const { width, x } = e.target.getBoundingClientRect();
+
+      // 控制范围
+      const percent = Math.max(0, Math.min(100, (e.clientX - x) / width));
+      await player.seek(percent * (playState?.duration || 0));
+    },
+    [player, playState],
+  );
+
+  const timerRef = useRef<NodeJS.Timer | null>();
+
+  useEffect(() => {
+    if (playState?.paused !== false) return;
+
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
+    timerRef.current = setInterval(() => {
+      // 直接转换为百分比位置
+      setPosition((prev) => prev + (1000 / playState.duration) * 100); // 1000ms / duration 转换为百分比
+    }, 1000);
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [playState]);
+
+  return (
+    <div className="controller p-4 flex flex-col items-stretch justify-start space-y-4">
+      <div
+        className="relative h-4 rounded-md"
+        style={{
+          backgroundImage: `linear-gradient(to right, green ${position}%, #999999 ${position}%)`,
+        }}
+        onClick={onResetPosition}
+      />
+
+      <div className="flex items-center justify-center space-x-4">
+        <IconButton
+          icon={<IconDoubleChevronLeft size="extra-large" />}
+          onClick={() => player?.previousTrack()}
+        />
+
+        {playState?.paused ? (
+          <IconButton
+            icon={
+              <IconPlay
+                size="extra-large"
+                onClick={() => player?.togglePlay()}
+              />
+            }
+          />
+        ) : (
+          <IconButton
+            icon={
+              <IconPause size="extra-large" onClick={() => player?.pause()} />
+            }
+          />
+        )}
+
+        <IconButton
+          icon={<IconDoubleChevronRight size="extra-large" />}
+          onClick={() => player?.nextTrack()}
+        />
+      </div>
+    </div>
+  );
 };
