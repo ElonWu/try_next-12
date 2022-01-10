@@ -1,6 +1,5 @@
-import { Album, SpotifyError } from '@type/spotify';
+import { Album, List, SpotifyError } from '@type/spotify';
 import { queryParams } from '@utils/format';
-import { Request } from '@utils/request';
 
 const SpotifyBase = `https://api.spotify.com/v1`;
 
@@ -62,21 +61,24 @@ export const getSpotifyAlbum = async (
  *
  * @description 获取推荐的新专辑
  */
-export const getSpotifyReleasedAlbum = (
-  access_token: string,
-  params: { id: string; limit: number; offset: number },
-) => {
-  return fetch(
-    `${SpotifyBase}/browse/new-releases` +
-      queryParams({ limit: params.limit, offset: params.offset }),
+export const getSpotifyReleasedAlbum = async (
+  spotifySession: any,
+  params: { limit?: number; offset?: number },
+): Promise<Album[]> => {
+  const response = await fetch(
+    `${SpotifyBase}/browse/new-releases` + queryParams(params),
     {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${access_token}`,
+        Authorization: `Bearer ${spotifySession?.access_token}`,
       },
     },
   );
+
+  const data = await response.json();
+
+  return data.albums.items;
 };
 
 /**

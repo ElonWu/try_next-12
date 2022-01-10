@@ -74,3 +74,24 @@ export const generateRandomString = (length: number) => {
   }
   return text;
 };
+
+export const durationFormat = (milliseconds: number) => {
+  const seconds = Math.ceil(milliseconds / 1000);
+  let left = seconds,
+    result = [];
+
+  const options = [
+    { unit: '时', value: 3600 },
+    { unit: '分', value: 60 },
+    { unit: '秒', value: 1 },
+  ];
+
+  for (let { unit, value } of options) {
+    const currUnit = Math.floor(left / value);
+    if (currUnit > 0) result.push(`${currUnit}${unit}`);
+
+    left = left % value;
+  }
+
+  return result.join(' ');
+};

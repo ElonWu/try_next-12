@@ -2,7 +2,7 @@ import type { GetServerSidePropsContext, NextPage } from 'next';
 
 // omponent
 import UserLayout from '@layouts/user';
-import { Empty } from '@douyinfe/semi-ui';
+import { Button, Empty } from '@douyinfe/semi-ui';
 
 // util
 import { useMemo, useEffect, useState } from 'react';
@@ -27,17 +27,30 @@ const ArtistedDetail: NextPage = () => {
 
   const [activeId, setActiveId] = useState<string | null>();
 
+  const title = useMemo(() => `专辑详情-${data?.name || '-'}`, [data]);
+
   if (!data) {
     return <Empty title="暂无数据" />;
   }
 
   return (
-    <UserLayout title="专辑详情">
-      <div className="h-screen w-full overflow-y-auto">
-        <div className="flex flex-col space-y-4">
+    <UserLayout title={title}>
+      <div className="flex flex-col items-stretch space-y-4">
+        <div className="flex justify-center px-4 pt-4">
           <AlbumPreview album={data} />
+        </div>
 
-          <div className="flex flex-col space-y-4">
+        <div className="flex flex-col space-y-4 items-stretch pb-4">
+          <div className="flex items-center justify-between px-4">
+            <h4 className="font-bold text-lg text-gray-600 w-full whitespace-nowrap overflow-hidden text-ellipsis">
+              专辑歌曲
+            </h4>
+            <Button onClick={() => router.push(`/spotify/player/${data.uri}`)}>
+              Play All
+            </Button>
+          </div>
+
+          <div className="grid gap-4 px-4">
             {(data?.tracks?.items || []).map((track: Track) => (
               <TrackPreview
                 key={track?.id}

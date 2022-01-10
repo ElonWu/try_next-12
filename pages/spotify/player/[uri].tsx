@@ -22,20 +22,18 @@ import { local } from '@utils/local_request';
 import { PlayState, Track } from '@type/spotify';
 import TrackPlay from '@components/TrackPlay';
 import {
-  IconArrowLeft,
-  IconArrowRight,
   IconDoubleChevronLeft,
   IconDoubleChevronRight,
   IconPause,
   IconPlay,
 } from '@douyinfe/semi-icons';
 
-const { SPOTIFY_PLAYER_NAME } = process.env;
-
 interface Player {
   connect: () => Promise<any>;
   disconnect: () => Promise<any>;
   togglePlay: () => Promise<any>;
+  resume: () => Promise<any>;
+  pause: () => Promise<any>;
   previousTrack: () => Promise<any>;
   nextTrack: () => Promise<any>;
   seek: (milliseconds: number) => Promise<any>;
@@ -55,12 +53,15 @@ const TrackDetail: NextPage<{ access_token?: string }> = ({ access_token }) => {
   const [position, setPosition] = useState<number>(0);
 
   const onReady = useCallback(async ({ device_id }: { device_id: string }) => {
+    console.log('4. on ready');
     await local.put('/api/spotify/play' + queryParams({ device_id }), {
       uri,
     });
   }, []);
 
   const onStateChange = useCallback((state) => {
+    console.log('4. on state change');
+    console.log({ state });
     if (!state) return;
 
     const {
@@ -99,9 +100,11 @@ const TrackDetail: NextPage<{ access_token?: string }> = ({ access_token }) => {
     window.onSpotifyWebPlaybackSDKReady = async () => {
       // @ts-ignore
       const player: Player = new Spotify.Player({
-        name: SPOTIFY_PLAYER_NAME,
+        name: 'ElonWu Web Player',
         getOAuthToken: (cb: any) => cb(access_token),
       });
+
+      console.log('3. init player', player);
 
       playerRef.current = player;
       // Ready
@@ -161,18 +164,18 @@ const TrackDetail: NextPage<{ access_token?: string }> = ({ access_token }) => {
           <Empty title="未获得详情" />
         ) : (
           <div className="flex flex-col items-stretch h-full">
-            <div className=" flex flex-col p-2">
-              <h4 className="text-xl font-bold text-teal-400">{track?.name}</h4>
-              <h4 className="text-xl font-bold text-teal-400">
-                {track?.artists[0]?.name}
-              </h4>
-            </div>
-
             <div className="flex-1 flex items-center justify-center">
               <TrackPlay track={track} />
             </div>
 
-            <div className="controller p-4">
+            <div className=" flex px-4 items-center justify-between">
+              <h4 className="text-md font-bold text-gray-600">{track?.name}</h4>
+              <h4 className="text-sm font-normal text-gray-400">
+                {track?.artists[0]?.name}
+              </h4>
+            </div>
+
+            <div className="controller p-4 flex flex-col items-stretch justify-start space-y-4">
               <div
                 className="relative h-4 rounded-md"
                 style={{
@@ -183,16 +186,32 @@ const TrackDetail: NextPage<{ access_token?: string }> = ({ access_token }) => {
 
               <div className="flex items-center justify-center space-x-4">
                 <IconButton
-                  icon={<IconDoubleChevronLeft />}
+                  icon={<IconDoubleChevronLeft size="extra-large" />}
                   onClick={() => playerRef.current?.previousTrack()}
                 />
 
-                <Button onClick={() => playerRef.current?.togglePlay()}>
-                  {playState?.paused ? <IconPlay /> : <IconPause />}
-                </Button>
+                {playState?.paused ? (
+                  <IconButton
+                    icon={
+                      <IconPlay
+                        size="extra-large"
+                        onClick={() => playerRef.current?.togglePlay()}
+                      />
+                    }
+                  />
+                ) : (
+                  <IconButton
+                    icon={
+                      <IconPause
+                        size="extra-large"
+                        onClick={() => playerRef.current?.pause()}
+                      />
+                    }
+                  />
+                )}
 
                 <IconButton
-                  icon={<IconDoubleChevronRight />}
+                  icon={<IconDoubleChevronRight size="extra-large" />}
                   onClick={() => playerRef.current?.nextTrack()}
                 />
               </div>
@@ -211,11 +230,13 @@ export const getServerSideProps = SpotifyGetServerSideProps;
 
 const useInsertScript = (url: string) => {
   useEffect(() => {
+    console.log('1. insert');
     const existed =
       document.querySelectorAll(`script[src="${url}"]`).length > 0;
 
     // 已加载脚本，直接执行回调
     if (existed) {
+      console.log('2. exsit');
       // @ts-ignore
       window.onSpotifyWebPlaybackSDKReady();
       return;
@@ -225,6 +246,7 @@ const useInsertScript = (url: string) => {
     const script = document.createElement('script');
     script.src = url;
 
-    document.head.appendChild(script);
+    console.log('2. append');
+    document.body.appendChild(script);
   }, []);
 };

@@ -5,16 +5,13 @@ import { Playlist } from '@type/spotify';
 import { useRouter } from 'next/router';
 import TrackPreview from './TrackPreview';
 
-const PlaylistOfMine = () => {
+const TracksRecommend = () => {
   const router = useRouter();
 
   const { data } = useApi<{ list: Playlist[] }>(`/api/spotify/playlist/me`);
 
   const list: Playlist[] = useMemo(
-    () =>
-      Array.isArray(data)
-        ? data.filter((playlist) => Boolean(playlist?.name))
-        : [],
+    () => (Array.isArray(data) ? data : []),
     [data],
   );
 
@@ -26,7 +23,7 @@ const PlaylistOfMine = () => {
 
   return (
     <div className="flex flex-col items-stretch px-4 space-y-4">
-      <h4 className="font-bold text-lg text-gray-600">关注歌单</h4>
+      <h4 className="font-bold text-lg text-gray-600">推荐歌单</h4>
 
       <div
         className="grid gap-4"
@@ -65,4 +62,4 @@ const PlaylistOfMine = () => {
   );
 };
 
-export default PlaylistOfMine;
+export default TracksRecommend;

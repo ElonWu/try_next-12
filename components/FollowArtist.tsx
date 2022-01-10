@@ -10,7 +10,7 @@ const FollowArtist = () => {
 
   const { data } = useApi<{ list: Artist[] }>('/api/spotify/artist/follow');
 
-  const list: any[] = useMemo(
+  const list: Artist[] = useMemo(
     () => (Array.isArray(data?.list) ? (data?.list as Artist[]) : []),
     [data],
   );
@@ -20,20 +20,25 @@ const FollowArtist = () => {
   }
 
   return (
-    <div className="flex flex-col items-stretch space-y-4">
-      <h4>关注歌手</h4>
-      <div className="flex flex-nowrap overflow-auto space-x-4 p-4">
+    <div className="flex flex-col items-stretch px-4 space-y-2">
+      <h4 className="font-bold text-lg text-gray-600">关注歌手</h4>
+      <div className="flex flex-nowrap overflow-auto space-x-4 pr-4">
         {list.map((artist) => {
           return (
             <div
               key={artist.id}
-              className="shrink-0 flex p-4 items-end justify-start rounded-md shadow-md cursor-pointer bg-no-repeat bg-cover bg-center w-16 h-24"
               onClick={() => router.push(`/spotify/artist/${artist.id}`)}
-              style={{
-                backgroundImage: `url(${artist.images?.[0]?.url})`,
-              }}
+              className="shrink-0 flex flex-col items-center justify-start cursor-pointer"
             >
-              {/* <h2>{artist.name}</h2> */}
+              <div
+                className="rounded-md shadow-md  bg-no-repeat bg-cover bg-center w-16 h-24"
+                style={{
+                  backgroundImage: `url(${artist.images?.[0]?.url})`,
+                }}
+              />
+              <h2 className="text-center text-sm text-gray-500 w-16 whitespace-nowrap overflow-hidden text-ellipsis">
+                {artist.name}
+              </h2>
             </div>
           );
         })}

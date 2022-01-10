@@ -16,24 +16,29 @@ const ArtistPreview = ({
 
   return (
     <div
-      className="shrink-0 bg-white rounded-md shadow-md p-4 flex items-center justify-start space-x-4 cursor-pointer"
+      className="w-full shrink-0 cursor-pointer relative"
       onClick={() => link && router.push(`/spotify/artist/${artist?.id}`)}
     >
       <img
         src={artist?.images?.[0]?.url}
         alt={artist?.name}
-        className="w-16 h-16 rounded border shadow-md"
+        className="w-full"
       />
-      <div className="h-full flex-1 flex flex-col justify-between min-w-0">
-        <div className="flex justify-between">
-          <h4 className="font-bold text-lg text-green-500">{artist?.name}</h4>
-          {/* <p>{artist?.followers}</p> */}
-        </div>
-        <div className="w-full flex flex-nowrap space-x-4 overflow-x-auto">
+      <div
+        className="absolute inset-0 p-4 flex flex-col space-y-4 items-stretch justify-end"
+        style={{
+          background: `linear-gradient(to bottom, #00000000, #000000)`,
+        }}
+      >
+        <h4 className="font-bold text-2xl text-green-500 w-full whitespace-nowrap overflow-hidden text-ellipsis">
+          {artist?.name}
+        </h4>
+
+        <div className="w-full flex space-x-4 overflow-x-auto">
           {artist?.genres?.map((genre) => (
             <p
               key={genre}
-              className="text-sm text-green-600 whitespace-nowrap p-1 bg-green-50 rounded-md"
+              className="text-sm text-green-600 whitespace-nowrap py-1 px-2 bg-green-50 rounded-sm"
             >
               {genre}
             </p>

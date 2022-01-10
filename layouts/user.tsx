@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Sctipt from 'next/script';
 import { NextPage } from 'next';
 import { ReactNode } from 'react';
 

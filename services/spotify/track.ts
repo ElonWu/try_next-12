@@ -32,11 +32,11 @@ export const getSpotifyTrack = async (
  *
  * @param access_token
  * @param params
- * @returns Promise<FollowArtists>
+ * @returns Promise<>
  *
  * @description 播放歌曲
  */
-export const playSpotifyTrack = async (
+export const playSpotifyUri = async (
   spotifySession: any,
   params: { device_id: string; uris: string[] },
 ) => {

@@ -22,18 +22,21 @@ const ArtistTopTracks = ({ artistId }: { artistId: string }) => {
   }
 
   return (
-    <div
-      className="grid gap-4 p-2"
-      style={{ gridTemplateColumns: `repeat(auto-fit, minmax(300px, 1fr))` }}
-    >
-      {list.map((track) => (
-        <TrackPreview
-          key={track.id}
-          track={track}
-          playing={activeId === track.id}
-          onPlay={(activeId) => setActiveId(activeId)}
-        />
-      ))}
+    <div className="flex flex-col items-stretch px-4 space-y-2">
+      <h4 className="font-bold text-lg text-gray-600">热门歌曲</h4>
+      <div
+        className="grid gap-4"
+        style={{ gridTemplateColumns: `repeat(auto-fit, minmax(300px, 1fr))` }}
+      >
+        {list.map((track) => (
+          <TrackPreview
+            key={track.id}
+            track={track}
+            playing={activeId === track.id}
+            onPlay={(activeId) => setActiveId(activeId)}
+          />
+        ))}
+      </div>
     </div>
   );
 };

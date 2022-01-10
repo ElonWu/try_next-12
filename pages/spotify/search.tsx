@@ -29,7 +29,7 @@ const SearchSpotify: NextPage = () => {
         type: ['album', 'artist', 'playlist', 'track'].join(','),
       });
       if (data) setResult(data);
-    }, 800),
+    }, 200),
     [search],
   );
 
@@ -38,7 +38,7 @@ const SearchSpotify: NextPage = () => {
   return (
     <UserLayout title="搜索">
       <div className="h-screen w-full overflow-y-auto">
-        <div className="flex space-x-4">
+        <div className="flex items-center justify-between py-4 pl-4">
           <Input
             className="flex-1"
             value={search}
@@ -75,7 +75,12 @@ const SearchSpotify: NextPage = () => {
             isEmpty={!result?.artist?.list?.length}
           >
             {(result?.artist?.list || []).map((artist: Artist) => (
-              <ArtistPreview artist={artist} key={artist?.id} link />
+              <div
+                key={artist?.id}
+                className="shrink-0 w-48 h-48 flex rounded-md overflow-hidden"
+              >
+                <ArtistPreview artist={artist} link />
+              </div>
             ))}
           </List>
         </div>
@@ -94,12 +99,12 @@ const List: FC<{ title: string; isEmpty: boolean }> = ({
   title,
   isEmpty,
 }) => (
-  <div className="p-4 rounded-md bg-slate-100">
-    <h4 className="p-2 text-lg font-bold border-b mb-4">{title}</h4>
+  <div className="px-4 flex flex-col space-y-4">
+    <h4 className="font-bold text-lg text-gray-600">{title}</h4>
     {isEmpty ? (
       <Empty title={`未搜索到${title}`} />
     ) : (
-      <div className="flex flex-nowrap overflow-y-auto space-x-4 p-2">
+      <div className="flex flex-nowrap overflow-x-auto space-x-4">
         {children}
       </div>
     )}

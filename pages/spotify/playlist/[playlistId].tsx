@@ -35,27 +35,41 @@ const PlaylistDetail: NextPage = () => {
 
   return (
     <UserLayout title={title}>
-      <div className="h-screen w-full overflow-y-auto">
-        <div className="flex flex-col space-y-4">
-          <div className="flex items-center justify-between border-b">
-            <h4 onClick={() => router.push(`/spotify/playlist/${data.id}`)}>
-              {data.name}
-            </h4>
-            <Button onClick={() => router.push(`/spotify/player/${data.uri}`)}>
-              Play
-            </Button>
+      <div className="flex flex-col space-y-4 items-stretch py-4">
+        <div className="w-full shrink-0 cursor-pointer relative">
+          <img
+            src={data?.images?.[0]?.url}
+            alt={data?.name}
+            className="w-full"
+          />
+          <div
+            className="absolute inset-0 p-4 flex flex-col space-y-4 items-stretch justify-end"
+            style={{
+              background: `linear-gradient(to bottom, #00000000, #000000)`,
+            }}
+          >
+            <div className="flex items-center justify-between px-4">
+              <h4 className="font-bold text-lg text-gray-600 w-full whitespace-nowrap overflow-hidden text-ellipsis">
+                {data.name}
+              </h4>
+              <Button
+                onClick={() => router.push(`/spotify/player/${data.uri}`)}
+              >
+                Play All
+              </Button>
+            </div>
           </div>
+        </div>
 
-          <div className="flex flex-col space-y-4">
-            {(data?.tracks?.items || []).map((item: PlaylistTrack) => (
-              <TrackPreview
-                key={item?.track?.id}
-                track={item?.track}
-                playing={activeId === item?.track.id}
-                onPlay={(activeId) => setActiveId(activeId)}
-              />
-            ))}
-          </div>
+        <div className="grid gap-4 px-4">
+          {(data?.tracks?.items || []).map((item: PlaylistTrack) => (
+            <TrackPreview
+              key={item?.track?.id}
+              track={item?.track}
+              playing={activeId === item?.track.id}
+              onPlay={(activeId) => setActiveId(activeId)}
+            />
+          ))}
         </div>
       </div>
     </UserLayout>

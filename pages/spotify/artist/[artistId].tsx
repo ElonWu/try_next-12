@@ -23,20 +23,18 @@ const ArtistDetail: NextPage = () => {
     if (!artistId) router.back();
   }, [artistId, router]);
 
-  return artistId ? (
+  return (
     <UserLayout title="歌手详情">
-      <div className="h-screen w-full overflow-y-auto">
-        <ArtistProfile artistId={artistId as string} />
-
-        <h4 className="p-4 mt-2">专辑</h4>
-        <ArtistAlbums artistId={artistId as string} />
-
-        <h4 className="p-4 mt-2">热门歌曲</h4>
-        <ArtistTopTracks artistId={artistId as string} />
-      </div>
+      {artistId ? (
+        <div className="flex flex-col items-stretch justify-start mb-4 space-y-4">
+          <ArtistProfile artistId={artistId as string} />
+          <ArtistAlbums artistId={artistId as string} />
+          <ArtistTopTracks artistId={artistId as string} />
+        </div>
+      ) : (
+        <Empty title="未检测到 artistId" />
+      )}
     </UserLayout>
-  ) : (
-    <Empty title="未检测到 artistId" />
   );
 };
 
