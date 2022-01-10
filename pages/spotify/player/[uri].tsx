@@ -123,7 +123,14 @@ const TrackDetail: NextPage<{ access_token?: string }> = ({ access_token }) => {
 
             <div className=" flex px-4 items-center justify-between">
               <h4 className="text-md font-bold text-gray-600">{track?.name}</h4>
-              <h4 className="text-sm font-normal text-gray-400">
+              <h4
+                className="text-sm font-normal text-gray-400"
+                onClick={() => {
+                  const artistId = track?.artists[0]?.uri?.split(':')?.[2];
+
+                  if (artistId) router.push(`/spotify/artist/${artistId}`);
+                }}
+              >
                 {track?.artists[0]?.name}
               </h4>
             </div>
@@ -154,7 +161,7 @@ const useInsertScript = (url: string) => {
 
     // 已加载脚本，直接执行回调
     if (existed) {
-      console.log('2. exsit');
+      console.log('2. exist');
       // @ts-ignore
       window.onSpotifyWebPlaybackSDKReady();
       return;

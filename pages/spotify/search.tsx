@@ -16,24 +16,39 @@ import { Album, SearchResultReponse, Track, Artist } from '@type/spotify';
 import AlbumPreview from '@components/AlbumPreview';
 import TrackPreview from '@components/TrackPreview';
 import ArtistPreview from '@components/ArtistPreview';
+import { useRouter } from 'next/router';
 
 const SearchSpotify: NextPage = () => {
-  const [search, setSearch] = useState<string>();
+  const [search, setSearch] = useState<string | undefined>();
 
   const [result, setResult] = useState<SearchResultReponse>();
 
   const onSearch = useCallback(
-    debounce(async () => {
+    debounce(async (search?: string) => {
+      if (!search) return;
+
       const data = await local.get<SearchResultReponse>('/api/spotify/search', {
         q: search,
         type: ['album', 'artist', 'playlist', 'track'].join(','),
       });
+
+      sessionStorage.setItem('lastSearch', search);
+
       if (data) setResult(data);
     }, 200),
-    [search],
+    [],
   );
 
   const [activeId, setActiveId] = useState<string | null>();
+
+  useEffect(() => {
+    const lastSearch = sessionStorage.getItem('lastSearch');
+
+    if (lastSearch) {
+      setSearch(lastSearch);
+      onSearch(lastSearch);
+    }
+  }, []);
 
   return (
     <UserLayout title="搜索">
@@ -45,13 +60,13 @@ const SearchSpotify: NextPage = () => {
             placeholder="请查找关键字"
             onChange={(value: string) => setSearch(value)}
             onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
-              if (e.code === 'Enter') onSearch();
+              if (e.code === 'Enter') onSearch(search);
             }}
           />
-          <IconButton icon={<IconSearch />} onClick={onSearch} />
+          <IconButton icon={<IconSearch />} onClick={() => onSearch(search)} />
         </div>
 
-        <div className="flex flex-col space-y-4 py-4">
+        <div className="flex flex-col space-y-4">
           <List key="track" title="歌曲" isEmpty={!result?.track?.list?.length}>
             {(result?.track?.list || []).map((track: Track) => (
               <TrackPreview
@@ -99,12 +114,12 @@ const List: FC<{ title: string; isEmpty: boolean }> = ({
   title,
   isEmpty,
 }) => (
-  <div className="px-4 flex flex-col space-y-4">
-    <h4 className="font-bold text-lg text-gray-600">{title}</h4>
+  <div className="flex flex-col space-y-4">
+    <h4 className="font-bold text-lg text-gray-600 px-4">{title}</h4>
     {isEmpty ? (
       <Empty title={`未搜索到${title}`} />
     ) : (
-      <div className="flex flex-nowrap overflow-x-auto space-x-4">
+      <div className="flex flex-nowrap overflow-x-auto space-x-4 px-4 pb-2">
         {children}
       </div>
     )}
