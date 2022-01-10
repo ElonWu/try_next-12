@@ -34,7 +34,10 @@ interface Player {
   removeListener: (event: string, cb: any) => void;
 }
 
-const TrackDetail: NextPage<{ access_token?: string }> = ({ access_token }) => {
+const TrackDetail: NextPage<{
+  access_token?: string;
+  SPOTIFY_PLAYER_NAME?: string;
+}> = ({ access_token, SPOTIFY_PLAYER_NAME }) => {
   const router = useRouter();
 
   const uri = useMemo(() => router?.query?.uri, [router?.query]);
@@ -76,7 +79,7 @@ const TrackDetail: NextPage<{ access_token?: string }> = ({ access_token }) => {
     window.onSpotifyWebPlaybackSDKReady = async () => {
       // @ts-ignore
       const player: Player = new Spotify.Player({
-        name: 'ElonWu Web Player',
+        name: SPOTIFY_PLAYER_NAME,
         getOAuthToken: (cb: any) => cb(access_token),
       });
 
@@ -107,6 +110,15 @@ const TrackDetail: NextPage<{ access_token?: string }> = ({ access_token }) => {
   useInsertScript('https://sdk.scdn.co/spotify-player.js');
 
   const title = useMemo(() => `播放 - ${track?.name || '-'}`, [track]);
+  const playType = useMemo(() => {
+    if (uri?.includes('playlist')) {
+      return '播放列表';
+    }
+    if (uri?.includes('album')) {
+      return '播放专辑';
+    }
+    return '播放歌曲';
+  }, [uri]);
 
   return (
     <UserLayout title={title}>
@@ -117,22 +129,37 @@ const TrackDetail: NextPage<{ access_token?: string }> = ({ access_token }) => {
           <Empty title="未获得详情" />
         ) : (
           <div className="flex flex-col items-stretch h-full">
-            <div className="flex-1 flex items-center justify-center">
+            <div className="p-4 flex items-center justify-center">
+              <h4 className="text-center text-2xl font-bold text-gray-600">
+                {playType}
+              </h4>
+            </div>
+            <div className="flex-1 flex items-center justify-center m-2">
               <TrackPlay track={track} />
             </div>
 
             <div className=" flex px-4 items-center justify-between">
               <h4 className="text-md font-bold text-gray-600">{track?.name}</h4>
-              <h4
-                className="text-sm font-normal text-gray-400"
-                onClick={() => {
-                  const artistId = track?.artists[0]?.uri?.split(':')?.[2];
 
-                  if (artistId) router.push(`/spotify/artist/${artistId}`);
-                }}
-              >
-                {track?.artists[0]?.name}
-              </h4>
+              <div className="flex items-center justify-end-end space-x-2">
+                {(track?.artists || []).map((artist, i) => {
+                  return (
+                    <span
+                      key={artist.uri}
+                      className={`text-sm font-normal text-gray-400 pl-2 ${
+                        i === 0 ? 'border-none' : 'border-l'
+                      }`}
+                      onClick={() => {
+                        const artistId = artist.uri?.split(':')?.[2];
+                        if (artistId)
+                          router.push(`/spotify/artist/${artistId}`);
+                      }}
+                    >
+                      {track?.artists[0]?.name || '-'}
+                    </span>
+                  );
+                })}
+              </div>
             </div>
 
             <PlayerController

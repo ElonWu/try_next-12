@@ -1,7 +1,8 @@
 import { withSessionSsr } from '@lib/session';
-import { differenceInMilliseconds, parseISO } from 'date-fns';
 import { GetServerSidePropsContext } from 'next';
 import { refreshSpotifyToken } from './user';
+
+const { SPOTIFY_PLAYER_NAME } = process.env;
 
 export const SpotifyGetServerSideProps = withSessionSsr(
   async ({ req }: GetServerSidePropsContext) => {
@@ -41,6 +42,7 @@ export const SpotifyGetServerSideProps = withSessionSsr(
       props: {
         profile,
         access_token,
+        SPOTIFY_PLAYER_NAME,
       },
     };
   },

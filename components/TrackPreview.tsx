@@ -35,18 +35,19 @@ const TrackPreview = ({
     >
       {hasImages && (
         <div
-          className={`w-12 h-12 rounded-full border border-purple-600 shadow-md overflow-hidden ${
+          className={`w-12 h-12 rounded-full border border-purple-600 shadow-md overflow-hidden bg-no-repeat bg-cover bg-center ${
             playing ? 'animate-spin' : ''
           }`}
-          style={{ animationDuration: '4s' }}
-        >
-          <img src={track?.album?.images?.[0]?.url} alt="Album" />
-        </div>
+          style={{
+            animationDuration: '4s',
+            backgroundImage: `url(${track?.album?.images?.[0]?.url})`,
+          }}
+        />
       )}
 
       <div className="flex-1 h-full grid gap-2 items-center">
         <h4 className="text-md font-bold text-teal-400 w-full whitespace-nowrap overflow-hidden text-ellipsis">
-          {track?.name}{' '}
+          {track?.name}
           <span className="text-sm font-normal">
             {durationFormat(track.duration_ms)}
           </span>

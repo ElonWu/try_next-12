@@ -53,7 +53,7 @@ const SearchSpotify: NextPage = () => {
   return (
     <UserLayout title="搜索">
       <div className="h-screen w-full overflow-y-auto">
-        <div className="flex items-center justify-between py-4 pl-4">
+        <div className="flex items-center justify-between py-4 pl-4 space-x-1">
           <Input
             className="flex-1"
             value={search}
@@ -92,7 +92,7 @@ const SearchSpotify: NextPage = () => {
             {(result?.artist?.list || []).map((artist: Artist) => (
               <div
                 key={artist?.id}
-                className="shrink-0 w-48 h-48 flex rounded-md overflow-hidden"
+                className="shrink-0 w-56 h-56 flex rounded-md overflow-hidden"
               >
                 <ArtistPreview artist={artist} link />
               </div>

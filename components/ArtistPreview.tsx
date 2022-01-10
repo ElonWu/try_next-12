@@ -25,20 +25,20 @@ const ArtistPreview = ({
         className="w-full"
       />
       <div
-        className="absolute inset-0 p-4 flex flex-col space-y-4 items-stretch justify-end"
+        className="absolute inset-0 p-4 flex flex-col space-y-2 items-stretch justify-end"
         style={{
           background: `linear-gradient(to bottom, #00000000, #000000)`,
         }}
       >
-        <h4 className="font-bold text-2xl text-green-500 w-full whitespace-nowrap overflow-hidden text-ellipsis">
+        <h4 className="font-bold text-lg text-green-500 w-full whitespace-nowrap overflow-hidden text-ellipsis">
           {artist?.name}
         </h4>
 
-        <div className="w-full flex space-x-4 overflow-x-auto">
+        <div className="w-full flex space-x-2 overflow-x-auto">
           {artist?.genres?.map((genre) => (
             <p
               key={genre}
-              className="text-sm text-green-600 whitespace-nowrap py-1 px-2 bg-green-50 rounded-sm"
+              className="text-xs text-green-600 whitespace-nowrap px-1 bg-green-50 rounded-sm"
             >
               {genre}
             </p>
