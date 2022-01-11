@@ -2,16 +2,17 @@ import type { GetServerSidePropsContext, NextPage } from 'next';
 
 // omponent
 import UserLayout from '@layouts/user';
-import { Notification } from '@douyinfe/semi-ui';
+import { Button, Notification } from '@douyinfe/semi-ui';
 import UserForm from '@components/UserForm';
 
 // util
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
-import { User } from '@models/user';
 import { local } from '@utils/local_request';
 import { useRouter } from 'next/router';
 import { withSessionSsr } from '@lib/session';
+
+import { User } from '@models/user';
 
 const Login: NextPage = () => {
   const router = useRouter();
@@ -25,10 +26,18 @@ const Login: NextPage = () => {
     [router],
   );
 
+  const onTest = async () => {
+    const list = await local.post('/api/firebase/test');
+
+    console.log(list);
+  };
+
   return (
     <UserLayout title="用户登录">
       <div className="flex items-center justify-center h-screen">
-        <UserForm onChange={onLogin} />
+        {/* <UserForm onChange={onLogin} /> */}
+
+        <Button onClick={onTest}>Test</Button>
       </div>
     </UserLayout>
   );

@@ -21,7 +21,7 @@ const Home: NextPage<{ user: User }> = ({ user }) => {
 
   return (
     <UserLayout title="首页">
-      <div className="flex flex-col space-y-4 p-4  m-auto items-center">
+      <div className="flex flex-col space-y-4 p-4  m-auto items-center justify-center">
         {/* 静态文件 basePath 为 public */}
         <Image src="/img/vercel.svg" alt="logo" width={141} height={32} />
         <h3>欢迎来到首页, {user?.name}</h3>

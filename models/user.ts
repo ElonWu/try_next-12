@@ -1,23 +1,37 @@
-import mongoose, { Schema, models } from 'mongoose';
-import type { Model } from 'mongoose';
+import { firestore } from '@lib/firebase';
+import { Record } from '@type/record';
 
-// 1. Create an interface representing a document in MongoDB.
 export interface User {
   name: string;
-  email: string;
+  age?: number;
   avatar?: string;
 }
 
-// 2. Create a Schema corresponding to the document interface.
-const userSchema = new Schema<User>({
-  name: { type: String, required: true },
-  email: { type: String, required: true },
-  avatar: String,
-});
+export const getUsers = async () => {
+  const userCollection = firestore.collection('users');
 
-userSchema.set('toObject', { virtuals: true });
+  const snapshot = await userCollection.get();
 
-const UserModel: Model<User> =
-  models.user || mongoose.model<User>('user', userSchema);
+  let result: Record<User>[] = [];
 
-export default UserModel;
+  snapshot.forEach((doc) => {
+    const user = doc.data();
+    result.push(Object.assign({}, user as User, { id: doc.id }));
+  });
+
+  return result;
+};
+
+export const createUser = async (user: User) => {
+  const userCollection = firestore.collection('users');
+
+  await userCollection.add(user);
+};
+
+export const updateUser = async (id: string, user: User) => {
+  const userCollection = firestore.collection('users');
+
+  const existed = await userCollection.doc(id);
+
+  if (existed) await user;
+};
