@@ -51,21 +51,28 @@ export const getSpotifyArtistTopTracks = (
 
 /**
  *
- * @param access_token
+ * @param spotifySession
  * @param params
- * @returns Promise<FollowArtists>
+ * @returns Promise<Album[]>
  *
  * @description 获取歌手的专辑
  */
-export const getSpotifyArtistAlbums = (
-  access_token: string,
-  params: { id: string },
+export const getSpotifyArtistAlbums = async (
+  spotifySession: any,
+  params: { artistId: string },
 ) => {
-  return fetch(`${SpotifyBase}/artists/${params.id}/albums`, {
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${access_token}`,
+  const response = await fetch(
+    `${SpotifyBase}/artists/${params.artistId}/albums`,
+    {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${spotifySession?.access_token}`,
+      },
     },
-  });
+  );
+
+  const data = await response.json();
+
+  return data?.items || [];
 };

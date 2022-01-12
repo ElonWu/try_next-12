@@ -9,15 +9,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   // @ts-ignore
-  const access_token = req.session?.spotify?.access_token;
-
-  const id = req.query.artistId as string;
-
-  const response = await getSpotifyArtistAlbums(access_token, {
-    id,
+  const data = await getSpotifyArtistAlbums(req.session?.spotify, {
+    artistId: req.query.artistId as string,
   });
-
-  const data = await response.json();
 
   if (!data || data?.error) {
     res
@@ -26,7 +20,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  res.status(200).json({ list: data.items || [] });
+  res.status(200).json(data);
 };
 
 export default withSessionRoute(handler);

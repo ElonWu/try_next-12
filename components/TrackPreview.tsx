@@ -30,7 +30,7 @@ const TrackPreview = ({
 
   return (
     <div
-      className="flex-shrink-0 p-2 bg-white rounded-md shadow-md flex items-center space-x-4"
+      className="shrink-0 p-2 bg-white rounded-md shadow-md flex items-center space-x-4"
       onClick={() => router.push(`/spotify/player/${track?.uri}`)}
     >
       {hasImages && (

@@ -1,20 +1,26 @@
 import React, { useMemo } from 'react';
 import useApi from '@hooks/useApi';
-import { Empty, Tag } from '@douyinfe/semi-ui';
 
 import { Artist } from '@type/spotify';
 import ArtistPreview from './ArtistPreview';
+import Loading, { ArtistSkeleton } from './base/loading';
 
 const ArtistProfile = ({ artistId }: { artistId: string }) => {
-  const { data: artist } = useApi<Artist>(
-    `/api/spotify/artist/profile?artistId=${artistId}`,
+  const { data, loading, hasError } = useApi<Artist>(
+    `/api/spotify/artist/profile`,
+    { artistId },
   );
 
-  if (!artist) {
-    return <Empty title="暂无数据" />;
-  }
-
-  return <ArtistPreview artist={artist} />;
+  return (
+    <Loading
+      loading={loading}
+      error={hasError}
+      empty={!data}
+      skeleton={<ArtistSkeleton />}
+    >
+      {data && <ArtistPreview artist={data} />}
+    </Loading>
+  );
 };
 
 export default ArtistProfile;
