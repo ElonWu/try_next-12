@@ -38,11 +38,14 @@ export const getSpotifyTrack = async (
  */
 export const playSpotifyUri = async (
   spotifySession: any,
-  params: { device_id: string; uris: string[] },
+  params: { device_id: string; uris: string[]; context_uri?: string },
 ) => {
   return fetch(
     `${SpotifyBase}/me/player/play` +
-      queryParams({ device_id: params.device_id }),
+      queryParams({
+        device_id: params.device_id,
+        context_uri: params?.context_uri,
+      }),
     {
       method: 'PUT',
       body: JSON.stringify({ uris: params.uris }),

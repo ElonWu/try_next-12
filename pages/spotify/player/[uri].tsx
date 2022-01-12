@@ -48,12 +48,15 @@ const TrackDetail: NextPage<{
   const [playState, setPlayState] = useState<PlayState>();
   const [position, setPosition] = useState<number>(0);
 
-  const onReady = useCallback(async ({ device_id }: { device_id: string }) => {
-    console.log('4. on ready');
-    await local.put('/api/spotify/play' + queryParams({ device_id }), {
-      uri,
-    });
-  }, []);
+  const onReady = useCallback(
+    async ({ device_id }: { device_id: string }) => {
+      console.log('4. on ready');
+      await local.put('/api/spotify/play' + queryParams({ device_id }), {
+        uri,
+      });
+    },
+    [uri],
+  );
 
   const onStateChange = useCallback((state) => {
     console.log('4. on state change');
@@ -74,9 +77,8 @@ const TrackDetail: NextPage<{
     setTrack(current_track);
   }, []);
 
-  useEffect(() => {
-    // @ts-ignore
-    window.onSpotifyWebPlaybackSDKReady = async () => {
+  const onSdkReady = useCallback(async () => {
+    try {
       // @ts-ignore
       const player: Player = new Spotify.Player({
         name: SPOTIFY_PLAYER_NAME,
@@ -92,18 +94,20 @@ const TrackDetail: NextPage<{
       player.addListener('player_state_changed', onStateChange);
 
       await player.connect();
-    };
+    } catch (err) {
+      console.log('on sdk ready error', err);
+    }
+  }, [access_token, onReady, onStateChange]);
 
+  useEffect(() => {
+    // @ts-ignore
+    window.onSpotifyWebPlaybackSDKReady = onSdkReady;
+  }, [onSdkReady]);
+
+  useEffect(() => {
     return () => {
       const player = playerRef.current;
-      if (!player) return;
-
-      // Ready
-      player.removeListener('ready', onReady);
-      // StateChange
-      player.removeListener('player_state_changed', onStateChange);
-
-      player.disconnect();
+      if (player) player.disconnect();
     };
   }, []);
 
@@ -120,16 +124,20 @@ const TrackDetail: NextPage<{
     return '播放歌曲';
   }, [uri]);
 
+  const player = useMemo(() => playerRef.current, undefined);
+
+  console.log({ player });
+
   return (
     <UserLayout title={title}>
       <div className="h-screen w-full overflow-y-auto">
-        {!playerRef.current ? (
+        {!player ? (
           <Empty title="连接播放器" />
         ) : !track ? (
           <Empty title="未获得详情" />
         ) : (
           <div className="flex flex-col items-stretch h-full">
-            <div className="p-4 flex items-center justify-center">
+            <div className="p-4 flex items-center justify-center border-b">
               <h4 className="text-center text-2xl font-bold text-gray-600">
                 {playType}
               </h4>
@@ -163,7 +171,7 @@ const TrackDetail: NextPage<{
             </div>
 
             <PlayerController
-              player={playerRef.current}
+              player={player}
               playState={playState}
               position={position}
               setPosition={setPosition}
@@ -190,7 +198,7 @@ const useInsertScript = (url: string) => {
     if (existed) {
       console.log('2. exist');
       // @ts-ignore
-      window.onSpotifyWebPlaybackSDKReady();
+      window?.onSpotifyWebPlaybackSDKReady?.();
       return;
     }
 
