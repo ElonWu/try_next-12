@@ -53,7 +53,7 @@ const SearchSpotify: NextPage = () => {
   return (
     <UserLayout title="搜索">
       <div className="h-screen w-full overflow-y-auto">
-        <div className="flex items-center justify-between py-4 pl-4 space-x-1">
+        <div className="flex items-center justify-between p-4 space-x-2">
           <Input
             className="flex-1"
             value={search}

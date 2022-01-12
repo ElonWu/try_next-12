@@ -4,40 +4,28 @@
 
 @import '~@douyinfe/semi-ui/dist/css/semi.min.css';
 
+* {
+  scrollbar-gutter: stable;
+}
+
 *::-webkit-scrollbar {
-  width: 2px;
-  height: 2px;
+  width: 1px;
+  height: 1px;
 }
 
 /* Track */
 *::-webkit-scrollbar-track {
   background: transparent;
-  border-radius: 1px;
+  border-radius: 0.5px;
 }
 
 /* Handle */
 *::-webkit-scrollbar-thumb {
   cursor: pointer;
-
   background: transparent;
 }
 
 /* Handle on hover */
 *::-webkit-scrollbar-thumb:hover {
   background: transparent;
-}
-
-.ant-menu-sub.ant-menu-inline {
-  background: #ffffff;
-}
-
-.ant-table-content::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-
-/* Track */
-.ant-table-content::-webkit-scrollbar-track {
-  background: transparent;
-  border-radius: 4px;
 }
