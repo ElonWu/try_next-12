@@ -56,6 +56,13 @@ const TrackDetail: NextPage<{
       await local.put('/api/spotify/play' + queryParams({ device_id }), {
         uri,
       });
+
+      setSDKReady(true);
+
+      if (process.env.NODE_ENV === 'production') {
+        // console.log("手动触发")
+        playerRef?.current?.togglePlay?.();
+      }
     },
     [uri],
   );
@@ -95,8 +102,6 @@ const TrackDetail: NextPage<{
       // StateChange
       player.addListener('player_state_changed', onStateChange);
 
-      setSDKReady(true);
-
       await player.connect();
     } catch (err) {
       console.log('on sdk ready error', err);
@@ -128,12 +133,10 @@ const TrackDetail: NextPage<{
     return '播放歌曲';
   }, [uri]);
 
-  const player = useMemo(() => playerRef.current, undefined);
-
   return (
     <UserLayout title={title}>
       <div className="h-screen w-full overflow-y-auto">
-        {!SDKReady || !player ? (
+        {!SDKReady || !playerRef.current ? (
           <Empty title="连接播放器" />
         ) : !track ? (
           <Empty title="未获得详情" />
@@ -173,7 +176,7 @@ const TrackDetail: NextPage<{
             </div>
 
             <PlayerController
-              player={player}
+              player={playerRef.current}
               playState={playState}
               position={position}
               setPosition={setPosition}
