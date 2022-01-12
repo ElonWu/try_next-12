@@ -43,6 +43,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       req.session?.spotify,
       {
         device_id: device_id as string,
+        context_uri: uri,
         uris,
       },
     );
