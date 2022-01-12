@@ -44,7 +44,9 @@ const TrackDetail: NextPage<{
 
   const playerRef = useRef<Player | null>();
 
+  const [SDKReady, setSDKReady] = useState<boolean>(false);
   const [track, setTrack] = useState<Track | null>();
+
   const [playState, setPlayState] = useState<PlayState>();
   const [position, setPosition] = useState<number>(0);
 
@@ -93,6 +95,8 @@ const TrackDetail: NextPage<{
       // StateChange
       player.addListener('player_state_changed', onStateChange);
 
+      setSDKReady(true);
+
       await player.connect();
     } catch (err) {
       console.log('on sdk ready error', err);
@@ -126,12 +130,10 @@ const TrackDetail: NextPage<{
 
   const player = useMemo(() => playerRef.current, undefined);
 
-  console.log({ player });
-
   return (
     <UserLayout title={title}>
       <div className="h-screen w-full overflow-y-auto">
-        {!player ? (
+        {!SDKReady || !player ? (
           <Empty title="连接播放器" />
         ) : !track ? (
           <Empty title="未获得详情" />
