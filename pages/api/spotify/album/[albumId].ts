@@ -8,12 +8,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  const id = req.query.albumId as string;
-
-  // @ts-ignore
-  const album = await getSpotifyAlbum(req.session?.spotify, { id });
-
   try {
+    const id = req.query.albumId as string;
+    // @ts-ignore
+    const album = await getSpotifyAlbum(req.session?.spotify, { id });
+
     res.status(200).json(album);
   } catch (error: any) {
     res
