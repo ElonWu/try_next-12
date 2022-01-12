@@ -4,6 +4,7 @@ import { Empty, Tag } from '@douyinfe/semi-ui';
 
 import { Artist } from '@type/spotify';
 import { useRouter } from 'next/router';
+import Image from 'next/image';
 
 const ArtistPreview = ({
   artist,
@@ -20,7 +21,7 @@ const ArtistPreview = ({
       onClick={() => link && router.push(`/spotify/artist/${artist?.id}`)}
     >
       <img
-        src={artist?.images?.[0]?.url}
+        src={artist?.images?.[0]?.url || ''}
         alt={artist?.name}
         className="w-full"
       />
