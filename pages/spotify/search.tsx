@@ -32,7 +32,7 @@ const SearchSpotify: NextPage = () => {
         type: ['album', 'artist', 'playlist', 'track'].join(','),
       });
 
-      sessionStorage.setItem('lastSearch', search);
+      sessionStorage.setItem('lastSearchSpotify', search);
 
       if (data) setResult(data);
     }, 200),
@@ -42,7 +42,7 @@ const SearchSpotify: NextPage = () => {
   const [activeId, setActiveId] = useState<string | null>();
 
   useEffect(() => {
-    const lastSearch = sessionStorage.getItem('lastSearch');
+    const lastSearch = sessionStorage.getItem('lastSearchSpotify');
 
     if (lastSearch) {
       setSearch(lastSearch);

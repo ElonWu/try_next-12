@@ -23,7 +23,7 @@ const SearchSpotify: NextPage = () => {
   const onSearch = useCallback(
     debounce(async (search?: string) => {
       if (!search) return;
-      sessionStorage.setItem('lastSearch', search);
+      sessionStorage.setItem('lastSearchUnsplash', search);
 
       try {
         setLoading(true);
@@ -44,7 +44,7 @@ const SearchSpotify: NextPage = () => {
   );
 
   useEffect(() => {
-    const lastSearch = sessionStorage.getItem('lastSearch');
+    const lastSearch = sessionStorage.getItem('lastSearchUnsplash');
 
     if (lastSearch) {
       setSearch(lastSearch);
