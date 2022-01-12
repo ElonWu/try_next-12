@@ -29,6 +29,7 @@ interface Player {
   pause: () => Promise<any>;
   previousTrack: () => Promise<any>;
   nextTrack: () => Promise<any>;
+  getCurrentState: () => Promise<any>;
   seek: (milliseconds: number) => Promise<any>;
   addListener: (event: string, cb: any) => void;
   removeListener: (event: string, cb: any) => void;
@@ -60,8 +61,21 @@ const TrackDetail: NextPage<{
       setSDKReady(true);
 
       if (process.env.NODE_ENV === 'production') {
-        // console.log("手动触发")
-        playerRef?.current?.togglePlay?.();
+        const player = playerRef?.current;
+        if (!player) {
+          console.log('no player');
+          return;
+        }
+
+        const state = await player?.getCurrentState();
+
+        console.log('state', state);
+
+        if (state) {
+          setPlayState(state);
+        } else {
+          await player?.togglePlay();
+        }
       }
     },
     [uri],
