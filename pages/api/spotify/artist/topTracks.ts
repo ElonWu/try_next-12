@@ -8,28 +8,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  // @ts-ignore
-  const access_token = req.session?.spotify?.access_token;
-  // @ts-ignore
-  const country = req.session?.spotify?.profile?.country as string;
-
-  const id = req.query.artistId as string;
-
-  const response = await getSpotifyArtistTopTracks(access_token, {
-    id,
-    market: country,
-  });
-
-  const data = await response.json();
-
-  if (!data || data?.error) {
+  try {
+    const data = await getSpotifyArtistTopTracks(req.session, {
+      id: req.query.artistId as string,
+      market: req.session?.spotify?.profile?.country as string,
+    });
+    res.status(200).json(data.tracks);
+  } catch (error: any) {
     res
-      .status(data?.error?.status || 400)
-      .json({ message: data?.error.message });
-    return;
+      .status(error?.status || 400)
+      .json({ message: error.message || '未知错误' });
   }
-
-  res.status(200).json(data.tracks || []);
 };
 
 export default withSessionRoute(handler);

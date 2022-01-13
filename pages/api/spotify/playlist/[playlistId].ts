@@ -8,12 +8,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  const id = req.query.playlistId as string;
-
-  // @ts-ignore
-  const playlist = await getSpotifyPlaylistDetail(req.session?.spotify, { id });
-
   try {
+    const playlist = await getSpotifyPlaylistDetail(req.session, {
+      id: req.query.playlistId as string,
+    });
     res.status(200).json(playlist);
   } catch (error: any) {
     res

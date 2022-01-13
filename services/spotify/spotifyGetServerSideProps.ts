@@ -1,29 +1,14 @@
 import { withSessionSsr } from '@lib/session';
 import { GetServerSidePropsContext } from 'next';
 import { refreshSpotifyToken } from './user';
+import { User } from '@type/spotify';
 
 const { SPOTIFY_PLAYER_NAME } = process.env;
 
 export const SpotifyGetServerSideProps = withSessionSsr(
   async ({ req }: GetServerSidePropsContext) => {
-    // @ts-ignore
-    const profile = req.session?.spotify?.profile;
-
-    // 无登录记录
-    if (!profile)
-      return {
-        redirect: {
-          destination: '/spotify',
-          permanent: false,
-        },
-      };
-
     try {
-      // @ts-ignore
-      const access_token = await refreshSpotifyToken(req.session.spotify);
-      // @ts-ignore
-      req.session.spotify.access_token = access_token;
-      await req.session.save();
+      await refreshSpotifyToken(req.session);
     } catch (err) {
       // 刷新失败
       return {
@@ -34,10 +19,18 @@ export const SpotifyGetServerSideProps = withSessionSsr(
       };
     }
 
-    // @ts-ignore
-    const access_token = req.session?.spotify?.access_token;
+    const { profile, access_token } = req.session?.spotify || {};
 
-    // 不能 return 空
+    // 无登录记录
+    if (!profile) {
+      return {
+        redirect: {
+          destination: '/spotify',
+          permanent: false,
+        },
+      };
+    }
+
     return {
       props: {
         profile,
@@ -50,21 +43,12 @@ export const SpotifyGetServerSideProps = withSessionSsr(
 
 export const SpotifyLoginGetServerSideProps = withSessionSsr(
   async ({ req }: GetServerSidePropsContext) => {
-    // @ts-ignore
-    const profile = req.session?.spotify?.profile;
-
-    // 无登录记录
-    if (!profile)
-      return {
-        props: {},
-      };
+    let profile: User | undefined;
 
     try {
-      // @ts-ignore
-      const access_token = await refreshSpotifyToken(req.session.spotify);
-      // @ts-ignore
-      req.session.spotify.access_token = access_token;
-      await req.session.save();
+      await refreshSpotifyToken(req.session);
+
+      profile = req.session?.spotify?.profile;
     } catch (err) {
       // 刷新失败
       return {
@@ -75,11 +59,6 @@ export const SpotifyLoginGetServerSideProps = withSessionSsr(
       };
     }
 
-    // 不能 return 空
-    return {
-      props: {
-        profile,
-      },
-    };
+    return { props: { profile } };
   },
 );

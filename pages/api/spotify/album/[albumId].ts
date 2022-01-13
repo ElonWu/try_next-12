@@ -9,9 +9,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   try {
-    const id = req.query.albumId as string;
-    // @ts-ignore
-    const album = await getSpotifyAlbum(req.session?.spotify, { id });
+    const album = await getSpotifyAlbum(req.session, {
+      id: req.query.albumId as string,
+    });
 
     res.status(200).json(album);
   } catch (error: any) {

@@ -2,7 +2,7 @@ import { withSessionRoute } from '@lib/session';
 import { getSpotifyPlaylistDetail } from '@services/spotify/playlist';
 import { playSpotifyUri } from '@services/spotify/track';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getSpotifyAlbum } from '../../../services/spotify/album';
+import { getSpotifyAlbum } from '@services/spotify/album';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'PUT') {
@@ -21,15 +21,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // 专辑 uris
   else if (uri.startsWith('spotify:album')) {
     const albumId = uri.split(':')[2];
-    // @ts-ignore
-    const album = await getSpotifyAlbum(req.session?.spotify, { id: albumId });
+    const album = await getSpotifyAlbum(req.session, { id: albumId });
     uris = album.tracks.items.map((track) => track.uri);
   }
   // 播放列表 uris
   else if (uri.startsWith('spotify:playlist')) {
     const playlistId = uri.split(':')[2];
-    // @ts-ignore
-    const playlist = await getSpotifyPlaylistDetail(req.session?.spotify, {
+    const playlist = await getSpotifyPlaylistDetail(req.session, {
       id: playlistId,
     });
     uris = playlist.tracks.items.map(
@@ -40,7 +38,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const result = await playSpotifyUri(
       // @ts-ignore
-      req.session?.spotify,
+      req.session,
       {
         device_id: device_id as string,
         context_uri: uri,

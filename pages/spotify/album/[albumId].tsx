@@ -2,7 +2,7 @@ import type { GetServerSidePropsContext, NextPage } from 'next';
 
 // omponent
 import UserLayout from '@layouts/user';
-import { Button, Empty } from '@douyinfe/semi-ui';
+import { Button } from '@douyinfe/semi-ui';
 
 // util
 import { useMemo, useEffect, useState } from 'react';
@@ -13,6 +13,10 @@ import { SpotifyGetServerSideProps } from '@services/spotify/spotifyGetServerSid
 import TrackPreview from '@components/TrackPreview';
 import { Album, Track } from '@type/spotify';
 import AlbumPreview from '@components/AlbumPreview';
+import Loading, {
+  TrackListSkeleton,
+  AlbumSkeleton,
+} from '@components/base/loading';
 
 const ArtistedDetail: NextPage = () => {
   const router = useRouter();
@@ -23,21 +27,26 @@ const ArtistedDetail: NextPage = () => {
     if (!albumId) router.back();
   }, [albumId, router]);
 
-  const { data } = useApi<Album>(`/api/spotify/album/${albumId}`);
+  const { data, loading, hasError } = useApi<Album>(
+    `/api/spotify/album/${albumId}`,
+  );
 
   const [activeId, setActiveId] = useState<string | null>();
 
   const title = useMemo(() => `专辑详情-${data?.name || '-'}`, [data]);
 
-  if (!data) {
-    return <Empty title="暂无数据" />;
-  }
-
   return (
     <UserLayout title={title}>
       <div className="flex flex-col items-stretch space-y-4">
         <div className="flex justify-center px-4 pt-4">
-          <AlbumPreview album={data} />
+          <Loading
+            loading={loading}
+            error={hasError}
+            empty={!data}
+            skeleton={<AlbumSkeleton />}
+          >
+            {data && <AlbumPreview album={data} />}
+          </Loading>
         </div>
 
         <div className="flex flex-col space-y-4 items-stretch pb-4">
@@ -45,21 +54,32 @@ const ArtistedDetail: NextPage = () => {
             <h4 className="font-bold text-lg text-gray-600 w-full whitespace-nowrap overflow-hidden text-ellipsis">
               专辑歌曲
             </h4>
-            <Button onClick={() => router.push(`/spotify/player/${data.uri}`)}>
-              Play All
-            </Button>
+            {data && (
+              <Button
+                onClick={() => router.push(`/spotify/player/${data.uri}`)}
+              >
+                Play All
+              </Button>
+            )}
           </div>
 
-          <div className="grid gap-4 px-4">
-            {(data?.tracks?.items || []).map((track: Track) => (
-              <TrackPreview
-                key={track?.id}
-                track={track}
-                playing={activeId === track.id}
-                onPlay={(activeId) => setActiveId(activeId)}
-              />
-            ))}
-          </div>
+          <Loading
+            loading={loading}
+            error={hasError}
+            empty={!data?.tracks?.items?.length}
+            skeleton={<TrackListSkeleton />}
+          >
+            <div className="grid gap-4 px-4">
+              {(data?.tracks?.items || []).map((track: Track) => (
+                <TrackPreview
+                  key={track?.id}
+                  track={track}
+                  playing={activeId === track.id}
+                  onPlay={(activeId) => setActiveId(activeId)}
+                />
+              ))}
+            </div>
+          </Loading>
         </div>
       </div>
     </UserLayout>

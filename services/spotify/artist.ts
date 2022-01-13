@@ -1,78 +1,46 @@
-import { queryParams } from '@utils/format';
-import { Artist } from '@type/spotify';
-
-const SpotifyBase = `https://api.spotify.com/v1`;
+import { List, Album, Artist, Track } from '@type/spotify';
+import { IronSession } from 'iron-session';
+import { spotifyGet } from './base';
 
 /**
- *
- * @param access_token
- * @param params
- * @returns Promise<Artist[]>
- *
  * @description 获取歌手信息
+ *
+ * @param session IronSession
+ * @param params
+ * @returns Promise<Artist>
+ *
  */
 export const getSpotifyArtistProfile = (
-  access_token: string,
-  params: { id: string },
-): Promise<Response> => {
-  return fetch(`${SpotifyBase}/artists/${params.id}`, {
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${access_token}`,
-    },
-  });
-};
+  session: IronSession,
+  params: { artistId: string },
+): Promise<Artist> => spotifyGet(session, `/artists/${params.artistId}`);
 
 /**
- *
- * @param access_token
- * @param params
- * @returns Promise<FollowArtists>
- *
  * @description 获取歌手最受欢迎的歌曲
+ *
+ * @param session IronSession
+ * @param params
+ * @returns Promise<Track[]>
+ *
  */
 export const getSpotifyArtistTopTracks = (
-  access_token: string,
+  session: IronSession,
   params: { id: string; market: string },
-) => {
-  return fetch(
-    `${SpotifyBase}/artists/${params.id}/top-tracks` +
-      queryParams({ market: params.market }),
-    {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${access_token}`,
-      },
-    },
-  );
-};
+): Promise<{ tracks: Track[] }> =>
+  spotifyGet(session, `/artists/${params.id}/top-tracks`, {
+    market: params.market,
+  });
 
 /**
- *
- * @param spotifySession
- * @param params
- * @returns Promise<Album[]>
- *
  * @description 获取歌手的专辑
+ *
+ * @param session IronSession
+ * @param params
+ * @returns Promise<List<Album>>
+ *
  */
 export const getSpotifyArtistAlbums = async (
-  spotifySession: any,
+  session: IronSession,
   params: { artistId: string },
-) => {
-  const response = await fetch(
-    `${SpotifyBase}/artists/${params.artistId}/albums`,
-    {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${spotifySession?.access_token}`,
-      },
-    },
-  );
-
-  const data = await response.json();
-
-  return data?.items || [];
-};
+): Promise<List<Album>> =>
+  spotifyGet(session, `/artists/${params.artistId}/albums`);

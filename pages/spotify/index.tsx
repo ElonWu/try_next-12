@@ -4,14 +4,15 @@ import type { GetServerSidePropsContext, NextPage } from 'next';
 import UserLayout from '@layouts/user';
 import { Button } from '@douyinfe/semi-ui';
 
+import { SpotifyLoginGetServerSideProps } from '@services/spotify/spotifyGetServerSideProps';
+
 // util
 import { useCallback } from 'react';
-
 import { local } from '@utils/local_request';
-import FollowArtist from '@components/FollowArtist';
-import { SpotifyLoginGetServerSideProps } from '@services/spotify/spotifyGetServerSideProps';
-import PlaylistOfMine from '@components/PlaylistOfMine';
+
 import UserNav from '@components/UserNav';
+import FollowArtist from '@components/FollowArtist';
+import PlaylistOfMine from '@components/PlaylistOfMine';
 import AlbumsNewlyReleased from '@components/AlbumsNewlyReleased';
 
 const Login: NextPage = ({ profile }: any) => {
@@ -23,19 +24,21 @@ const Login: NextPage = ({ profile }: any) => {
 
   return (
     <UserLayout title="用户登录">
-      {profile ? (
-        <div className="flex flex-col items-stretch justify-start mb-4 space-y-4">
-          <UserNav profile={profile} />
+      <div className="h-screen w-full overflow-y-auto">
+        {profile ? (
+          <div className="flex flex-col items-stretch justify-start mb-4 space-y-4">
+            <UserNav profile={profile} />
 
-          <AlbumsNewlyReleased />
-          <FollowArtist />
-          <PlaylistOfMine />
-        </div>
-      ) : (
-        <div className="h-full flex items-center justify-center">
-          <Button onClick={onLogin}>请授权登录</Button>
-        </div>
-      )}
+            <AlbumsNewlyReleased />
+            <FollowArtist />
+            <PlaylistOfMine />
+          </div>
+        ) : (
+          <div className="h-full flex items-center justify-center">
+            <Button onClick={onLogin}>请授权登录</Button>
+          </div>
+        )}
+      </div>
     </UserLayout>
   );
 };

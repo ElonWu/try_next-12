@@ -13,7 +13,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const state = generateRandomString(16);
 
-  // @ts-ignore
   req.session.spotify = { state };
   await req.session.save();
 

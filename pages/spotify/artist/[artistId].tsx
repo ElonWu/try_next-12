@@ -1,11 +1,10 @@
 import type { GetServerSidePropsContext, NextPage } from 'next';
 
-// omponent
+// component
 import UserLayout from '@layouts/user';
-import { Button, Empty } from '@douyinfe/semi-ui';
 
 // util
-import { useCallback, useMemo, useEffect } from 'react';
+import { useMemo, useEffect } from 'react';
 
 import ArtistProfile from '@components/ArtistProfile';
 import ArtistTopTracks from '@components/ArtistTopTracks';
@@ -25,15 +24,11 @@ const ArtistDetail: NextPage = () => {
 
   return (
     <UserLayout title="歌手详情">
-      {artistId ? (
-        <div className="flex flex-col items-stretch justify-start mb-4 space-y-4">
-          <ArtistProfile artistId={artistId as string} />
-          <ArtistAlbums artistId={artistId as string} />
-          <ArtistTopTracks artistId={artistId as string} />
-        </div>
-      ) : (
-        <Empty title="未检测到 artistId" />
-      )}
+      <div className="flex flex-col items-stretch justify-start mb-4 space-y-4">
+        <ArtistProfile artistId={artistId as string} />
+        <ArtistAlbums artistId={artistId as string} />
+        <ArtistTopTracks artistId={artistId as string} />
+      </div>
     </UserLayout>
   );
 };

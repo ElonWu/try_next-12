@@ -21,7 +21,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   // 保存鉴权信息
 
-  // @ts-ignore
   req.session.spotify = Object.assign({}, req.session.spotify, {
     state,
     last_update: new Date(),
@@ -35,7 +34,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   // 保存个人信息
   if (user) {
-    // @ts-ignore
     req.session.spotify = Object.assign({}, req.session.spotify, {
       profile: user,
     });

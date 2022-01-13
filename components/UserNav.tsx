@@ -8,19 +8,19 @@ import { IconSearch, IconSignal } from '@douyinfe/semi-icons';
 const UserNav = ({ profile }: any) => {
   const router = useRouter();
 
-  // const onLogout = useCallback(async () => {
-  //   await local.post('/api/spotify/logout');
-  //   Notification.success({ content: '已登出', duration: 5 });
-  //   router.reload();
-  // }, [router]);
+  const onLogout = useCallback(async () => {
+    await local.post('/api/spotify/logout');
+    Notification.success({ content: '已登出', duration: 5 });
+    router.reload();
+  }, [router]);
 
   return (
-    <div className="p-4 rounde shadow-md flex items-center justify-between">
-      <Avatar size="small">{profile?.display_name?.[0] || ''}</Avatar>
+    <div className="px-4 py-2 rounde shadow-sm flex items-center justify-between bg-white sticky top-0">
+      <Avatar size="small" onClick={onLogout}>
+        {profile?.display_name?.[0] || ''}
+      </Avatar>
 
       <div className="flex items-center justify-end">
-        {/* <IconButton size='large' onClick={onLogout} icon={<IconSignal size="large" />} /> */}
-
         <IconButton
           size="large"
           onClick={() => router.push('/spotify/search')}

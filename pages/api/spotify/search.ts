@@ -7,14 +7,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(405).json({ message: 'Method Not Allowed' });
     return;
   }
-
-  const result = await searchSpotify(
-    // @ts-ignore
-    req.session?.spotify,
-    Object.assign({ limit: 5 }, req.query),
-  );
-
   try {
+    const result = await searchSpotify(
+      req.session,
+      Object.assign({ limit: 5 }, req.query),
+    );
     res.status(200).json(result);
   } catch (error: any) {
     res

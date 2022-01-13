@@ -18,9 +18,10 @@ const Loading: FC<LoadingProps> = ({
 }) => {
   const content = useMemo(() => {
     if (loading) {
-      return skeleton ? (
-        <Skeleton placeholder={skeleton} loading={true} active />
-      ) : (
+      if (skeleton)
+        return <Skeleton placeholder={skeleton} loading={true} active />;
+
+      return (
         <div className="p-2 flex items-center justify-center">
           <Spin size="large" spinning />
         </div>
@@ -45,7 +46,7 @@ export default Loading;
 
 export const ArtistSkeleton = () => {
   return (
-    <div className="shrink-0 h-48 w-full p-2 border rounded-md">
+    <div className="shrink-0 h-56 w-full p-2 border rounded-md">
       <Skeleton.Avatar style={{ marginRight: 12 }} />
       <div>
         <Skeleton.Title
@@ -86,14 +87,21 @@ export const AlbumSkeleton = () => {
   );
 };
 
-export const AlbumListSkeleton = ({ count = 5 }: { count?: number }) => {
-  const list = useMemo(
-    () => new Array(count).fill(0).map((el, i) => ({ key: i })),
-    [count],
-  );
+export const AlbumListSkeleton = ({
+  count = 5,
+  row,
+}: {
+  count?: number;
+  row?: boolean;
+}) => {
+  const list = useList(count);
 
   return (
-    <div className="flex flex-nowrap space-x-4 w-full overflow-x-auto py-2">
+    <div
+      className={`flex w-full items-stretch p-2 ${
+        row ? 'flex-row space-x-4 overflow-x-auto' : 'flex-col space-y-4'
+      }`}
+    >
       {list.map(({ key }) => (
         <AlbumSkeleton key={key} />
       ))}
@@ -101,17 +109,55 @@ export const AlbumListSkeleton = ({ count = 5 }: { count?: number }) => {
   );
 };
 
-export const TrackListSkeleton = ({ count = 5 }: { count?: number }) => {
-  const list = useMemo(
-    () => new Array(count).fill(0).map((el, i) => ({ key: i })),
-    [count],
-  );
+export const TrackListSkeleton = ({
+  count = 5,
+  row,
+}: {
+  count?: number;
+  row?: boolean;
+}) => {
+  const list = useList(count);
 
   return (
-    <div className="py-2 flex flex-col space-y-4 w-full items-stretch">
+    <div
+      className={`flex w-full items-stretch p-2 ${
+        row ? 'flex-row space-x-4 overflow-x-auto' : 'flex-col space-y-4'
+      }`}
+    >
       {list.map(({ key }) => (
         <TrackSkeleton key={key} />
       ))}
     </div>
+  );
+};
+
+export const ArtistPreviewSkeleton = () => {
+  return (
+    <div className="shrink-0 flex flex-col space-y-2">
+      <Skeleton.Image className="w-16 h-24" />
+      <Skeleton.Title />
+    </div>
+  );
+};
+
+export const ArtistPreviewListSkeleton = ({
+  count = 5,
+}: {
+  count?: number;
+}) => {
+  const list = useList(count);
+  return (
+    <div className="flex flex-nowrap space-x-4 w-full overflow-x-auto p-2">
+      {list.map(({ key }) => (
+        <ArtistPreviewSkeleton key={key} />
+      ))}
+    </div>
+  );
+};
+
+const useList = (count: number): { key: any }[] => {
+  return useMemo(
+    () => new Array(count).fill(0).map((el, i) => ({ key: i })),
+    [count],
   );
 };

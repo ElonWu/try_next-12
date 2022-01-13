@@ -8,13 +8,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  // @ts-ignore
-  const albums = await getSpotifyReleasedAlbum(req.session?.spotify, {
-    limit: 5,
-  });
-
   try {
-    res.status(200).json(albums);
+    const data = await getSpotifyReleasedAlbum(req.session, {
+      limit: 5,
+    });
+
+    res.status(200).json(data.albums.items);
   } catch (error: any) {
     res
       .status(error?.status || 400)

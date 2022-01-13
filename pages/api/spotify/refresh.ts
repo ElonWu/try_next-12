@@ -38,8 +38,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   console.log('spotify refresh response', response);
 
-  // @ts-ignore
-  req.session.spotify.access_token = response?.access_token;
+  req.session.spotify = Object.assign({}, req.session.spotify, {
+    access_token: response?.access_token,
+  });
   req.session.save();
 
   res.status(200).json({ message: 'refresh success' });

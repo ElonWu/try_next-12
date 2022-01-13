@@ -8,29 +8,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  // @ts-ignore
-  const access_token = req.session?.spotify?.access_token;
-
-  const id = req.query.artistId as string;
-
-  const response = await getSpotifyArtistProfile(access_token, {
-    id,
-  });
-
-  const data = await response.json();
-
-  if (!data || data?.error) {
+  try {
+    const artist = await getSpotifyArtistProfile(req.session, {
+      artistId: req.query.artistId as string,
+    });
+    res.status(200).json(artist);
+  } catch (error: any) {
     res
-      .status(data?.error?.status || 400)
-      .json({ message: data?.error.message });
-    return;
+      .status(error?.status || 400)
+      .json({ message: error.message || '未知错误' });
   }
-
-  res.status(200).json(
-    Object.assign({}, data, {
-      followers: data.followers.total,
-    }),
-  );
 };
 
 export default withSessionRoute(handler);

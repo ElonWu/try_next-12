@@ -1,29 +1,22 @@
 import {
-  Album,
-  Artist,
-  Episode,
-  Playlist,
-  Show,
-  Track,
   SpotifySerchType,
   SearchResult,
-  SpotifySerchResultKey,
   SearchResultReponse,
 } from '@type/spotify';
-import { queryParams } from '@utils/format';
 
-const SpotifyBase = `https://api.spotify.com/v1`;
+import { IronSession } from 'iron-session';
+import { spotifyGet } from './base';
 
 /**
  *
- * @param access_token
+ * @param session {IronSession}
  * @param params
- * @returns Promise<FollowArtists>
+ * @returns Promise<SearchResultReponse>
  *
  * @description 获取歌曲
  */
 export const searchSpotify = async (
-  spotifySession: any,
+  session: IronSession,
   params: {
     q?: string;
     type?: SpotifySerchType[];
@@ -31,17 +24,8 @@ export const searchSpotify = async (
     offset?: number;
   },
 ): Promise<SearchResultReponse> => {
-  const response = await fetch(`${SpotifyBase}/search` + queryParams(params), {
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${spotifySession?.access_token}`,
-    },
-  });
-
-  const search: SearchResult = await response.json();
-
-  let result: SearchResultReponse = {
+  const search = await spotifyGet<SearchResult>(session, `/search`, params);
+  return {
     album: {
       type: 'album',
       list: search?.albums?.items || [],
@@ -68,6 +52,4 @@ export const searchSpotify = async (
     //   list: search?.episodes?.items || [],
     // },
   };
-
-  return result;
 };

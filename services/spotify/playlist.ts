@@ -1,7 +1,6 @@
-import { queryParams } from '@utils/format';
-import { Playlist, Track } from '@type/spotify';
-
-const SpotifyBase = `https://api.spotify.com/v1`;
+import { List, Playlist, Track } from '@type/spotify';
+import { IronSession } from 'iron-session';
+import { spotifyGet } from './base';
 
 /**
  *
@@ -12,86 +11,33 @@ const SpotifyBase = `https://api.spotify.com/v1`;
  * @description 获取我的播放列表
  */
 export const getMySpotifyPlaylist = async (
-  spotifySession: any,
+  session: IronSession,
   params: { limit?: number; offset?: number },
-): Promise<Playlist[]> => {
-  const response = await fetch(
-    `${SpotifyBase}/me/playlists` + queryParams(params),
-    {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${spotifySession?.access_token}`,
-      },
-    },
-  );
-
-  const data = await response.json();
-
-  if (data?.error) {
-    return Promise.reject(data.error);
-  }
-
-  return Promise.resolve(data.items);
-};
+): Promise<List<Playlist>> => spotifyGet(session, `/me/playlists`, params);
 
 /**
  *
  * @param access_token
  * @param params
- * @returns Promise<Playlist[]>
+ * @returns Promise<Playlist>
  *
  * @description 获取我的播放列表
  */
 export const getSpotifyPlaylistDetail = async (
-  spotifySession: any,
+  session: IronSession,
   params: { id: string },
-): Promise<Playlist> => {
-  const response = await fetch(`${SpotifyBase}/playlists/${params.id}`, {
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${spotifySession?.access_token}`,
-    },
-  });
-
-  const data = await response.json();
-
-  if (data?.error) {
-    return Promise.reject(data.error);
-  }
-
-  return Promise.resolve(data);
-};
+): Promise<Playlist> => spotifyGet(session, `/playlists/${params.id}`);
 
 /**
  *
  * @param access_token
  * @param params
- * @returns Promise<Playlist[]>
+ * @returns Promise<List<Track>>
  *
- * @description 获取我的播放列表
+ * @description 获取近期播放
  */
 export const getSpotifyRecently = async (
-  spotifySession: any,
+  session: IronSession,
   params: { limit?: number; offset?: number },
-): Promise<Track[]> => {
-  const response = await fetch(
-    `${SpotifyBase}/me/player/recently-played` + queryParams(params),
-    {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${spotifySession?.access_token}`,
-      },
-    },
-  );
-
-  const data = await response.json();
-
-  if (data?.error) {
-    return Promise.reject(data.error);
-  }
-
-  return Promise.resolve(data.items);
-};
+): Promise<List<Track>> =>
+  spotifyGet(session, `/me/player/recently-played`, params);

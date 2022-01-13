@@ -143,6 +143,7 @@ export interface User {
   images: Image[];
   type: 'user';
   uri: string;
+  country: string;
 }
 
 export interface Category {

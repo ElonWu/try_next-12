@@ -17,21 +17,28 @@ import AlbumPreview from '@components/AlbumPreview';
 import TrackPreview from '@components/TrackPreview';
 import ArtistPreview from '@components/ArtistPreview';
 import { useRouter } from 'next/router';
+import Loading, {
+  AlbumListSkeleton,
+  ArtistPreviewListSkeleton,
+  TrackListSkeleton,
+} from '@components/base/loading';
 
 const SearchSpotify: NextPage = () => {
   const [search, setSearch] = useState<string | undefined>();
 
   const [result, setResult] = useState<SearchResultReponse>();
 
+  const [loading, setLoading] = useState(false);
+
   const onSearch = useCallback(
     debounce(async (search?: string) => {
       if (!search) return;
-
+      setLoading(true);
       const data = await local.get<SearchResultReponse>('/api/spotify/search', {
         q: search,
         type: ['album', 'artist', 'playlist', 'track'].join(','),
       });
-
+      setLoading(false);
       sessionStorage.setItem('lastSearchSpotify', search);
 
       if (data) setResult(data);
@@ -53,7 +60,7 @@ const SearchSpotify: NextPage = () => {
   return (
     <UserLayout title="搜索">
       <div className="h-screen w-full overflow-y-auto">
-        <div className="flex items-center justify-between p-4 space-x-2">
+        <div className="flex items-center justify-between p-4 space-x-2 bg-white shadow-sm sticky top-0">
           <Input
             className="flex-1"
             value={search}
@@ -66,38 +73,67 @@ const SearchSpotify: NextPage = () => {
           <IconButton icon={<IconSearch />} onClick={() => onSearch(search)} />
         </div>
 
-        <div className="flex flex-col space-y-4">
-          <List key="track" title="歌曲" isEmpty={!result?.track?.list?.length}>
-            {(result?.track?.list || []).map((track: Track) => (
-              <TrackPreview
-                key={track?.id}
-                track={track}
-                playing={activeId === track.id}
-                onPlay={(activeId) => setActiveId(activeId)}
-              />
-            ))}
-          </List>
+        <div className="flex flex-col space-y-4 px-2 py-4">
+          <div className="flex flex-col">
+            <h4 className="font-bold text-lg text-gray-600 px-4">歌曲</h4>
 
-          <List key="album" title="专辑" isEmpty={!result?.album?.list?.length}>
-            {(result?.album?.list || []).map((album: Album) => (
-              <AlbumPreview album={album} key={album?.id} link />
-            ))}
-          </List>
-
-          <List
-            key="artist"
-            title="歌手"
-            isEmpty={!result?.artist?.list?.length}
-          >
-            {(result?.artist?.list || []).map((artist: Artist) => (
-              <div
-                key={artist?.id}
-                className="shrink-0 w-56 h-56 flex rounded-md overflow-hidden"
-              >
-                <ArtistPreview artist={artist} link />
+            <Loading
+              loading={loading}
+              empty={!result?.track?.list?.length}
+              error={false}
+              skeleton={<TrackListSkeleton row />}
+            >
+              <div className="flex flex-nowrap overflow-x-auto space-x-4 p-2">
+                {(result?.track?.list || []).map((track: Track) => (
+                  <TrackPreview
+                    key={track?.id}
+                    track={track}
+                    playing={activeId === track.id}
+                    onPlay={(activeId) => setActiveId(activeId)}
+                  />
+                ))}
               </div>
-            ))}
-          </List>
+            </Loading>
+          </div>
+
+          <div className="flex flex-col">
+            <h4 className="font-bold text-lg text-gray-600 px-4">专辑</h4>
+
+            <Loading
+              loading={loading}
+              empty={!result?.album?.list?.length}
+              error={false}
+              skeleton={<AlbumListSkeleton />}
+            >
+              <div className="flex flex-nowrap overflow-x-auto space-x-4 p-2">
+                {(result?.album?.list || []).map((album: Album) => (
+                  <AlbumPreview album={album} key={album?.id} link />
+                ))}
+              </div>
+            </Loading>
+          </div>
+
+          <div className="flex flex-col">
+            <h4 className="font-bold text-lg text-gray-600 px-4">歌手</h4>
+
+            <Loading
+              loading={loading}
+              empty={!result?.artist?.list?.length}
+              error={false}
+              skeleton={<ArtistPreviewListSkeleton />}
+            >
+              <div className="flex flex-nowrap overflow-x-auto space-x-4 p-2">
+                {(result?.artist?.list || []).map((artist: Artist) => (
+                  <div
+                    key={artist?.id}
+                    className="shrink-0 w-56 h-56 flex rounded-md overflow-hidden"
+                  >
+                    <ArtistPreview artist={artist} link />
+                  </div>
+                ))}
+              </div>
+            </Loading>
+          </div>
         </div>
       </div>
     </UserLayout>
@@ -108,20 +144,3 @@ export default SearchSpotify;
 
 // run-time 实时根据 params 查询和渲染
 export const getServerSideProps = SpotifyGetServerSideProps;
-
-const List: FC<{ title: string; isEmpty: boolean }> = ({
-  children,
-  title,
-  isEmpty,
-}) => (
-  <div className="flex flex-col space-y-4">
-    <h4 className="font-bold text-lg text-gray-600 px-4">{title}</h4>
-    {isEmpty ? (
-      <Empty title={`未搜索到${title}`} />
-    ) : (
-      <div className="flex flex-nowrap overflow-x-auto space-x-4 px-4 pb-2">
-        {children}
-      </div>
-    )}
-  </div>
-);

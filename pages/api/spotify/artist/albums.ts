@@ -8,19 +8,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  // @ts-ignore
-  const data = await getSpotifyArtistAlbums(req.session?.spotify, {
-    artistId: req.query.artistId as string,
-  });
+  try {
+    const albums = await getSpotifyArtistAlbums(req.session, {
+      artistId: req.query.artistId as string,
+    });
 
-  if (!data || data?.error) {
+    res.status(200).json(albums.items);
+  } catch (error: any) {
     res
-      .status(data?.error?.status || 400)
-      .json({ message: data?.error.message });
-    return;
+      .status(error?.status || 400)
+      .json({ message: error.message || '未知错误' });
   }
-
-  res.status(200).json(data);
 };
 
 export default withSessionRoute(handler);

@@ -1,139 +1,102 @@
-import { User, SpotifyError, Artist } from '@type/spotify';
-import { queryParams } from '@utils/format';
-
 import { differenceInMilliseconds, parseISO } from 'date-fns';
+import { IronSession } from 'iron-session';
 
-const SpotifyBase = `https://api.spotify.com/v1`;
+import { User, List, Artist } from '@type/spotify';
+import { spotifyGet } from './base';
+
+const SpotifyTokenUri = `https://accounts.spotify.com/api/token`;
 
 const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_CALLBACK_URI } =
   process.env;
 
 /**
+ * @description 获取 token
  *
  * @param code
  * @returns Promise
- *
- * @description 获取 token
  */
 export const getSpotifyToken = (code: string) => {
-  const Authorization = `Basic ${Buffer.from(
-    `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`,
-  ).toString('base64')}`;
-
-  // @ts-ignore
-  const body = new URLSearchParams({
-    code,
-    redirect_uri: SPOTIFY_CALLBACK_URI,
-    grant_type: 'authorization_code',
-  });
-
-  return fetch(`https://accounts.spotify.com/api/token`, {
+  return fetch(SpotifyTokenUri, {
     method: 'POST',
-    body,
+    // @ts-ignore
+    body: new URLSearchParams({
+      code,
+      redirect_uri: SPOTIFY_CALLBACK_URI,
+      grant_type: 'authorization_code',
+    }),
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-      Authorization,
+      Authorization: `Basic ${Buffer.from(
+        `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`,
+      ).toString('base64')}`,
     },
   });
 };
 
 /**
+ * @description 确保需要更新 token
  *
- * @param code
+ * @param session {IronSession}
  * @returns Promise
- *
- * @description 获取 token
  */
-export const refreshSpotifyToken = async (spotifySession: any) => {
-  const Authorization = `Basic ${Buffer.from(
-    `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`,
-  ).toString('base64')}`;
+export const refreshSpotifyToken = async (session: IronSession) => {
+  // 确认有基础的 session
+  const { last_update, expires_in, refresh_token } = session.spotify || {};
+  if (!last_update || !expires_in) return Promise.resolve();
 
-  const { last_update, expires_in, refresh_token, access_token } =
-    spotifySession;
-
+  // 距离最近一次获取的时间
   const lastUpdatedPast = differenceInMilliseconds(
     new Date(),
     parseISO(last_update),
   );
 
-  // 即将或已过期
-  if (lastUpdatedPast >= expires_in * 0.9) {
+  // 还未过期
+  if (lastUpdatedPast < expires_in * 0.9) return Promise.resolve();
+
+  // 即将或已过期时，刷新 token
+  const response = await fetch(SpotifyTokenUri, {
+    method: 'POST',
     // @ts-ignore
-    const body = new URLSearchParams({
-      refresh_token,
-      grant_type: 'refresh_token',
-    });
-
-    const response = await fetch(`https://accounts.spotify.com/api/token`, {
-      method: 'POST',
-      body,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-        Authorization,
-      },
-    });
-
-    const data = await response.json();
-
-    return data?.access_token;
-  }
-
-  return access_token;
-};
-
-/**
- *
- * @param access_token
- * @returns Promise<User>
- *
- * @description 获取关注的歌手
- */
-export const getSpotifyProfile = async (
-  access_token: string,
-): Promise<User | SpotifyError> => {
-  const response = await fetch(`${SpotifyBase}/me`, {
+    body: new URLSearchParams({ refresh_token, grant_type: 'refresh_token' }),
     headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${access_token}`,
+      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+      Authorization: `Basic ${Buffer.from(
+        `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`,
+      ).toString('base64')}`,
     },
   });
 
-  const data: User = await response.json();
+  const data = await response.json();
+  // 更新 session
+  session.spotify = Object.assign({}, session.spotify, {
+    access_token: data?.access_token,
+  });
 
-  return data;
+  await session.save();
 };
 
 /**
+ * @description 获取个人信息
+ *
+ * @param session{IronSession}
+ * @returns Promise<User>
+ *
+ */
+export const getSpotifyProfile = async (session: IronSession): Promise<User> =>
+  spotifyGet(session, '/me');
+
+/**
+ * @description 获取关注的歌手
  *
  * @param access_token
  * @param params
- * @returns Promise<Artists[]>
- *
- * @description 获取关注的歌手
+ * @returns Promise<{artists: List<Artist>}>
  */
 export const getSpotifyFollowArtist = async (
-  spotifySession: any,
-  params: { type: 'artist'; limit?: number },
-): Promise<Artist[]> => {
-  const response = await fetch(
-    `${SpotifyBase}/me/following` + queryParams(params),
-    {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${spotifySession?.access_token}`,
-      },
-    },
-  );
+  session: IronSession,
+  params?: { limit?: number },
+): Promise<{ artists: List<Artist> }> => {
+  const query = Object.assign({ type: 'artist' }, params);
 
-  const data: { artists: { items: Artist[] } } & SpotifyError =
-    await response.json();
-
-  if (data?.error) {
-    return Promise.reject(data.error);
-  }
-
-  return Promise.resolve(data.artists.items);
+  return spotifyGet(session, `/me/following`, query);
 };
