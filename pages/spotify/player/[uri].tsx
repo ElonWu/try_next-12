@@ -59,7 +59,7 @@ const TrackDetail: NextPage<{
     debounce(async () => {
       await local.put('/api/spotify/play', { device_id, uri });
       console.log('6. trigger play');
-    }, 1500);
+    }, 1500)();
   }, []);
 
   const onStateChange = useCallback((state) => {
