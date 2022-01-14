@@ -27,16 +27,18 @@ export const getSpotifyTrack = async (
 export const playSpotifyUri = async (
   session: IronSession,
   params: { device_id: string; uris?: string[]; context_uri?: string },
-) =>
-  spotifyPut(
+) => {
+  const payload = params?.uris
+    ? { uris: params?.uris }
+    : { context_uri: params?.context_uri };
+
+  return spotifyPut(
     session,
     `/me/player/play` +
       (params.device_id ? queryParams({ device_id: params.device_id }) : ''),
-    {
-      uris: params?.uris,
-      context_uri: params?.context_uri,
-    },
+    payload,
   );
+};
 
 /**
  *

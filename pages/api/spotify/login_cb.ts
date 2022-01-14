@@ -30,7 +30,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   });
   await req.session.save();
 
-  const user = await getSpotifyProfile(data?.access_token);
+  const user = await getSpotifyProfile(req.session);
 
   // 保存个人信息
   if (user) {

@@ -41,7 +41,7 @@ export const getSpotifyToken = (code: string) => {
  */
 export const refreshSpotifyToken = async (session: IronSession) => {
   // 确认有基础的 session
-  const { last_update, expires_in, refresh_token } = session.spotify || {};
+  const { last_update, expires_in, refresh_token } = session?.spotify || {};
   if (!last_update || !expires_in) return Promise.resolve();
 
   // 距离最近一次获取的时间

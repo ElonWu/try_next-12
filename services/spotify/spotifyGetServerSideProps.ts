@@ -59,6 +59,6 @@ export const SpotifyLoginGetServerSideProps = withSessionSsr(
       };
     }
 
-    return { props: { profile } };
+    return { props: { profile: profile || null } };
   },
 );

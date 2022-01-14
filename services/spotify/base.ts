@@ -24,18 +24,20 @@ function spotifyRequest<T>(
     await refreshSpotifyToken(session);
 
     const uri = `${SpotifyBase}${url}`;
-    const access_token = session.spotify?.access_token;
+    const access_token = session?.spotify?.access_token;
+
+    const payload: RequestInit = {
+      method,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${access_token}`,
+      },
+    };
+    if (body) payload.body = JSON.stringify(body);
 
     try {
-      const response = await fetch(uri, {
-        method,
-        body: body ? JSON.stringify(body) : undefined,
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
-        },
-      });
+      const response = await fetch(uri, payload);
 
       const contentType = response.headers.get('content-type');
 
