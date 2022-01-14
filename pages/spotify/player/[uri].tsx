@@ -20,6 +20,7 @@ import {
 } from '@douyinfe/semi-icons';
 import { local } from '@utils/local_request';
 import Loading, { PlayerSkeleton } from '@components/base/loading';
+import { debounce } from 'lodash';
 
 interface Player {
   connect: () => Promise<any>;
@@ -52,12 +53,13 @@ const TrackDetail: NextPage<{
   const [playState, setPlayState] = useState<PlayState>();
   const [position, setPosition] = useState<number>(0);
 
-  const onReady = useCallback(async ({ device_id }: { device_id: string }) => {
+  const onReady = useCallback(({ device_id }: { device_id: string }) => {
     console.log('5. on ready', { device_id });
 
-    await local.put('/api/spotify/play', { device_id, uri });
-
-    console.log('6. trigger play');
+    debounce(async () => {
+      await local.put('/api/spotify/play', { device_id, uri });
+      console.log('6. trigger play');
+    }, 1500);
   }, []);
 
   const onStateChange = useCallback((state) => {

@@ -7,7 +7,9 @@ export const local = new Request('/', {
     return Promise.resolve(data);
   },
   onError: (err: any) => {
-    const errMsg = err?.response?.statusText || '未知错误';
+    console.log({ err });
+    const errMsg =
+      err?.response?.statusText || err?.response?.data?.message || '未知错误';
 
     Notification.error({
       content: errMsg,
