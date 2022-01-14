@@ -90,6 +90,8 @@ const SearchSpotify: NextPage = () => {
                     track={track}
                     playing={activeId === track.id}
                     onPlay={(activeId) => setActiveId(activeId)}
+                    showDuration={false}
+                    style={{ width: 250 }}
                   />
                 ))}
               </div>

@@ -1,4 +1,4 @@
-import type { GetServerSidePropsContext, NextPage } from 'next';
+import type { NextPage } from 'next';
 import { useCallback, useMemo, useEffect, useState, useRef } from 'react';
 import type { Dispatch, SetStateAction, MouseEventHandler } from 'react';
 
@@ -10,8 +10,6 @@ import { Button, Empty, IconButton } from '@douyinfe/semi-ui';
 import { useRouter } from 'next/router';
 
 import { SpotifyGetServerSideProps } from '@services/spotify/spotifyGetServerSideProps';
-import { queryParams } from '@utils/format';
-import { local } from '@utils/local_request';
 import { PlayState, Track } from '@type/spotify';
 import TrackPlay from '@components/TrackPlay';
 import {
@@ -20,6 +18,7 @@ import {
   IconPause,
   IconPlay,
 } from '@douyinfe/semi-icons';
+import { local } from '@utils/local_request';
 
 interface Player {
   connect: () => Promise<any>;
@@ -33,6 +32,7 @@ interface Player {
   seek: (milliseconds: number) => Promise<any>;
   addListener: (event: string, cb: any) => void;
   removeListener: (event: string, cb: any) => void;
+  activateElement: () => void;
 }
 
 const TrackDetail: NextPage<{
@@ -51,39 +51,16 @@ const TrackDetail: NextPage<{
   const [playState, setPlayState] = useState<PlayState>();
   const [position, setPosition] = useState<number>(0);
 
-  const onReady = useCallback(
-    async ({ device_id }: { device_id: string }) => {
-      console.log('4. on ready');
-      await local.put('/api/spotify/play' + queryParams({ device_id }), {
-        uri,
-      });
+  const onReady = useCallback(async ({ device_id }: { device_id: string }) => {
+    console.log('6. on ready', { device_id });
 
-      setSDKReady(true);
+    await local.put('/api/spotify/play', { device_id, uri });
 
-      if (process.env.NODE_ENV === 'production') {
-        const player = playerRef?.current;
-        if (!player) {
-          console.log('no player');
-          return;
-        }
-
-        const state = await player?.getCurrentState();
-
-        console.log('state', state);
-
-        if (state) {
-          setPlayState(state);
-        } else {
-          await player?.togglePlay();
-        }
-      }
-    },
-    [uri],
-  );
+    console.log('7. trigger play');
+  }, []);
 
   const onStateChange = useCallback((state) => {
-    console.log('4. on state change');
-    console.log({ state });
+    console.log('8. on state change', { state });
     if (!state) return;
 
     const {
@@ -106,21 +83,52 @@ const TrackDetail: NextPage<{
       const player: Player = new Spotify.Player({
         name: SPOTIFY_PLAYER_NAME,
         getOAuthToken: (cb: any) => cb(access_token),
+        volume: 0.5,
       });
 
-      console.log('3. init player', player);
+      console.log('3. init player');
 
-      playerRef.current = player;
       // Ready
       player.addListener('ready', onReady);
       // StateChange
       player.addListener('player_state_changed', onStateChange);
 
+      player.addListener('initialization_error', (e: any) =>
+        console.log('initialization_error', e),
+      );
+
+      player.addListener('authentication_error', (e: any) =>
+        console.log('authentication_error', e),
+      );
+
+      player.addListener('account_error', (e: any) =>
+        console.log('account_error', e),
+      );
+
+      player.addListener('playback_error', (e: any) =>
+        console.log('playback_error', e),
+      );
+
+      player.addListener('not_ready', (e: any) => console.log('not_ready', e));
+
+      player.addListener('autoplay_failed', (e: any) =>
+        console.log('autoplay_failed', e),
+      );
+
       await player.connect();
+
+      console.log('4. player connect');
+
+      // await player.activateElement();
+
+      // console.log('5. player activate element');
+
+      playerRef.current = player;
+      setSDKReady(true);
     } catch (err) {
       console.log('on sdk ready error', err);
     }
-  }, [access_token, onReady, onStateChange]);
+  }, []);
 
   useEffect(() => {
     // @ts-ignore

@@ -10,7 +10,7 @@ const ArtistTopTracks = ({ artistId }: { artistId: string }) => {
     data = [],
     loading,
     hasError,
-  } = useApi<Track[]>(`/api/spotify/artist/topTracks`, { artistId });
+  } = useApi<Track[]>(`/api/spotify/artist/top_tracks`, { artistId });
   const [activeId, setActiveId] = useState<string | null>();
 
   return (

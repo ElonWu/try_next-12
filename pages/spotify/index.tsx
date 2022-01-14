@@ -14,6 +14,7 @@ import UserNav from '@components/UserNav';
 import FollowArtist from '@components/FollowArtist';
 import PlaylistOfMine from '@components/PlaylistOfMine';
 import AlbumsNewlyReleased from '@components/AlbumsNewlyReleased';
+import AlbumsSaved from '@components/AlbumsSaved';
 
 const Login: NextPage = ({ profile }: any) => {
   const onLogin = useCallback(async () => {
@@ -29,9 +30,10 @@ const Login: NextPage = ({ profile }: any) => {
           <div className="flex flex-col items-stretch justify-start mb-4 space-y-4">
             <UserNav profile={profile} />
 
-            <AlbumsNewlyReleased />
+            <AlbumsSaved />
             <FollowArtist />
             <PlaylistOfMine />
+            <AlbumsNewlyReleased />
           </div>
         ) : (
           <div className="h-full flex items-center justify-center">

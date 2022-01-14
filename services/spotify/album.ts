@@ -1,9 +1,7 @@
-import { Album, List } from '@type/spotify';
-import { queryParams } from '@utils/format';
-import { IronSession, IronSessionData } from 'iron-session';
+import { SavedAlbum, Album, List } from '@type/spotify';
+import { IronSession } from 'iron-session';
 import { spotifyDelete, spotifyGet, spotifyPut } from './base';
-
-const SpotifyBase = `https://api.spotify.com/v1`;
+import { getSpotifyPlaylistDetail } from './playlist';
 
 /**
  *
@@ -55,6 +53,19 @@ export const getSpotifyReleasedAlbum = async (
  *
  * @param session {IronSession}
  * @param params
+ * @returns Promise<List<Album>>
+ *
+ */
+export const getSavedSpotifyAlbums = (
+  session: IronSession,
+  params: { limit?: number; offset?: number },
+): Promise<List<SavedAlbum>> => spotifyGet(session, `/me/albums`, params);
+
+/**
+ * @description 收藏专辑
+ *
+ * @param session {IronSession}
+ * @param params
  * @returns Promise
  *
  */
@@ -75,16 +86,3 @@ export const unsaveSpotifyAlbums = (
   session: IronSession,
   params: { ids: string },
 ) => spotifyDelete(session, `/me/albums`, params);
-
-/**
- *
- * @param session {IronSession}
- * @param params
- * @returns Promise
- *
- * @description 检查收藏专辑
- */
-export const checkSpotifySavedAlbums = (
-  session: IronSession,
-  params: { ids: string },
-) => spotifyGet(session, `/me/albums/contains`, params);

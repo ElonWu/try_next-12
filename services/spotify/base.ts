@@ -26,22 +26,36 @@ function spotifyRequest<T>(
     const uri = `${SpotifyBase}${url}`;
     const access_token = session.spotify?.access_token;
 
-    const response = await fetch(uri, {
-      headers: {
+    try {
+      const response = await fetch(uri, {
         method,
-        body,
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${access_token}`,
-      },
-    });
+        body: body ? JSON.stringify(body) : undefined,
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${access_token}`,
+        },
+      });
 
-    const data: T & SpotifyError = await response.json();
+      const contentType = response.headers.get('content-type');
 
-    if (data?.error) {
-      reject(data.error);
-    } else {
-      resolve(data);
+      console.log({ uri, body, method, resContentType: contentType });
+
+      if (contentType && contentType.indexOf('application/json') !== -1) {
+        const data: T & SpotifyError = await response.json();
+
+        if (data?.error) {
+          reject(data.error);
+        } else {
+          resolve(data);
+        }
+      } else {
+        const result = await response.text();
+        // console.log({ response });
+        resolve(result as any);
+      }
+    } catch (err) {
+      reject(err);
     }
   });
 }

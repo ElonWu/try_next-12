@@ -224,3 +224,8 @@ export interface PlayState {
     previous_tracks: Track[];
   };
 }
+
+export interface SavedAlbum {
+  added_at: string;
+  album: Album;
+}

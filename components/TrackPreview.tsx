@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo, CSSProperties } from 'react';
 import type { LegacyRef } from 'react';
 import { Empty } from '@douyinfe/semi-ui';
 import { Track } from '@type/spotify';
@@ -10,10 +10,14 @@ const TrackPreview = ({
   track,
   playing,
   onPlay,
+  showDuration = true,
+  style = {},
 }: {
   track: Track;
   playing: boolean;
   onPlay: (activeId: string | null) => void;
+  showDuration?: boolean;
+  style?: CSSProperties;
 }) => {
   const router = useRouter();
 
@@ -31,16 +35,21 @@ const TrackPreview = ({
   return (
     <div
       className="shrink-0 p-2 bg-white rounded-md shadow-md flex items-center space-x-4"
+      style={style}
       onClick={() => router.push(`/spotify/player/${track?.uri}`)}
     >
       {hasImages && (
         <div
-          className={`w-12 h-12 rounded-full border border-purple-600 shadow-md overflow-hidden bg-no-repeat bg-cover bg-center ${
+          className={`w-12 h-12 rounded-full border border-purple-600 shadow-md overflow-hidden bg-no-repeat bg-cover bg-center cursor-pointer ${
             playing ? 'animate-spin' : ''
           }`}
           style={{
             animationDuration: '4s',
             backgroundImage: `url(${track?.album?.images?.[0]?.url})`,
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            router.push(`/spotify/album/${track?.album.id}`);
           }}
         />
       )}
@@ -48,13 +57,28 @@ const TrackPreview = ({
       <div className="flex-1 h-full grid gap-2 items-center">
         <h4 className="text-md font-bold text-teal-400 w-full whitespace-nowrap overflow-hidden text-ellipsis">
           {track?.name}
-          <span className="text-sm font-normal">
-            {durationFormat(track.duration_ms)}
-          </span>
+          {showDuration && (
+            <span className="text-xs font-normal px-2">
+              {durationFormat(track.duration_ms)}
+            </span>
+          )}
         </h4>
-        <p className="text-gray-400 text-sm">
-          {track.artists.map((artist) => artist.name).join(' . ')}
-        </p>
+        <div className="flex-1 shrink-0 min-w-0 overflow-x-auto flex flex-nowrap">
+          {track.artists.map((artist, i) => (
+            <span
+              key={artist.id}
+              className={`text-gray-400 text-sm cursor-pointer whitespace-nowrap ${
+                i === 0 ? '' : 'border-l pl-2 ml-2'
+              }`}
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/spotify/artist/${artist.id}`);
+              }}
+            >
+              {artist.name}
+            </span>
+          ))}
+        </div>
       </div>
 
       <Player
