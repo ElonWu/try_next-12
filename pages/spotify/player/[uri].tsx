@@ -59,7 +59,7 @@ const TrackDetail: NextPage<{
     debounce(async () => {
       await local.put('/api/spotify/play', { device_id, uri });
       console.log('6. trigger play');
-    }, 1500)();
+    }, 2000)(); // 有可能是 device 注册延迟，会出现 Device Not Found 的情况， 暂未完全解决；
   }, []);
 
   const onStateChange = useCallback((state) => {
