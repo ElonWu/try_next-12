@@ -13,7 +13,7 @@ import { local } from '@utils/local_request';
 import UserNav from '@components/UserNav';
 import FollowArtist from '@components/FollowArtist';
 import PlaylistOfMine from '@components/PlaylistOfMine';
-import AlbumsNewlyReleased from '@components/AlbumsNewlyReleased';
+// import AlbumsNewlyReleased from '@components/AlbumsNewlyReleased';
 import AlbumsSaved from '@components/AlbumsSaved';
 
 const Login: NextPage = ({ profile }: any) => {
@@ -33,7 +33,7 @@ const Login: NextPage = ({ profile }: any) => {
             <AlbumsSaved />
             <FollowArtist />
             <PlaylistOfMine />
-            <AlbumsNewlyReleased />
+            {/* <AlbumsNewlyReleased /> */}
           </div>
         ) : (
           <div className="h-full flex items-center justify-center">
