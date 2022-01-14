@@ -16,7 +16,6 @@ import { Album, SearchResultReponse, Track, Artist } from '@type/spotify';
 import AlbumPreview from '@components/AlbumPreview';
 import TrackPreview from '@components/TrackPreview';
 import ArtistPreview from '@components/ArtistPreview';
-import { useRouter } from 'next/router';
 import Loading, {
   AlbumListSkeleton,
   ArtistPreviewListSkeleton,

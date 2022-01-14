@@ -12,7 +12,7 @@ import useApi from '@hooks/useApi';
 import { SpotifyGetServerSideProps } from '@services/spotify/spotifyGetServerSideProps';
 import TrackPreview from '@components/TrackPreview';
 import { Playlist, Track } from '@type/spotify';
-import { PlaylistTrack } from '../../../type/spotify';
+import { PlaylistTrack } from '@type/spotify';
 import Loading, {
   ArtistSkeleton,
   TrackListSkeleton,

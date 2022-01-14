@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import type { FC, ReactNode } from 'react';
+import type { FC, ReactNode, CSSProperties } from 'react';
 import { Empty, Spin, Skeleton } from '@douyinfe/semi-ui';
 
 export interface LoadingProps {
@@ -159,5 +159,30 @@ const useList = (count: number): { key: any }[] => {
   return useMemo(
     () => new Array(count).fill(0).map((el, i) => ({ key: i })),
     [count],
+  );
+};
+
+export const PlayerSkeleton: FC<{ style?: CSSProperties }> = ({ style }) => {
+  return (
+    <div className="w-full" style={style}>
+      <div className="flex-1 flex items-center justify-center m-2">
+        <Skeleton.Image style={{ width: '100%', height: 320 }} />
+      </div>
+
+      <div className="p-4">
+        <div className="flex py-2 items-center justify-between">
+          <Skeleton.Title style={{ width: 120 }} />
+          <Skeleton.Title style={{ width: 120 }} />
+        </div>
+
+        <Skeleton.Title />
+
+        <div className="flex space-x-4 items-center justify-center p-4">
+          <Skeleton.Button style={{ width: 32 }} />
+          <Skeleton.Button style={{ width: 32 }} />
+          <Skeleton.Button style={{ width: 32 }} />
+        </div>
+      </div>
+    </div>
   );
 };

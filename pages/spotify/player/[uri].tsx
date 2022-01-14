@@ -4,7 +4,7 @@ import type { Dispatch, SetStateAction, MouseEventHandler } from 'react';
 
 // omponent
 import UserLayout from '@layouts/user';
-import { Button, Empty, IconButton } from '@douyinfe/semi-ui';
+import { IconButton } from '@douyinfe/semi-ui';
 
 // util
 import { useRouter } from 'next/router';
@@ -19,6 +19,7 @@ import {
   IconPlay,
 } from '@douyinfe/semi-icons';
 import { local } from '@utils/local_request';
+import Loading, { PlayerSkeleton } from '@components/base/loading';
 
 interface Player {
   connect: () => Promise<any>;
@@ -52,11 +53,11 @@ const TrackDetail: NextPage<{
   const [position, setPosition] = useState<number>(0);
 
   const onReady = useCallback(async ({ device_id }: { device_id: string }) => {
-    console.log('6. on ready', { device_id });
+    console.log('5. on ready', { device_id });
 
     await local.put('/api/spotify/play', { device_id, uri });
 
-    console.log('7. trigger play');
+    console.log('6. trigger play');
   }, []);
 
   const onStateChange = useCallback((state) => {
@@ -119,10 +120,6 @@ const TrackDetail: NextPage<{
 
       console.log('4. player connect');
 
-      // await player.activateElement();
-
-      // console.log('5. player activate element');
-
       playerRef.current = player;
       setSDKReady(true);
     } catch (err) {
@@ -158,19 +155,27 @@ const TrackDetail: NextPage<{
   return (
     <UserLayout title={title}>
       <div className="h-screen w-full overflow-y-auto">
-        {!SDKReady || !playerRef.current ? (
-          <Empty title="连接播放器" />
-        ) : !track ? (
-          <Empty title="未获得详情" />
-        ) : (
-          <div className="flex flex-col items-stretch h-full">
-            <div className="p-4 flex items-center justify-center border-b">
-              <h4 className="text-center text-2xl font-bold text-gray-600">
-                {playType}
-              </h4>
-            </div>
+        <div className="flex flex-col items-stretch h-full">
+          <div className="p-4 flex items-center justify-center border-b">
+            <h4 className="text-center text-2xl font-bold text-gray-600">
+              {playType}
+            </h4>
+          </div>
+
+          <Loading
+            loading={!playState}
+            skeleton={
+              <PlayerSkeleton
+                style={{
+                  height: `calc(100vh - 66px)`,
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              />
+            }
+          >
             <div className="flex-1 flex items-center justify-center m-2">
-              <TrackPlay track={track} />
+              {track && <TrackPlay track={track} />}
             </div>
 
             <div className=" flex px-4 items-center justify-between">
@@ -197,14 +202,16 @@ const TrackDetail: NextPage<{
               </div>
             </div>
 
-            <PlayerController
-              player={playerRef.current}
-              playState={playState}
-              position={position}
-              setPosition={setPosition}
-            />
-          </div>
-        )}
+            {playerRef.current && (
+              <PlayerController
+                player={playerRef.current}
+                playState={playState}
+                position={position}
+                setPosition={setPosition}
+              />
+            )}
+          </Loading>
+        </div>
       </div>
     </UserLayout>
   );
