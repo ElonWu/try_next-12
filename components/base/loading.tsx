@@ -73,9 +73,14 @@ export const TrackSkeleton = () => {
   );
 };
 
-export const AlbumSkeleton = () => {
+export const AlbumSkeleton: FC<{ style?: CSSProperties }> = ({
+  style = {},
+}) => {
   return (
-    <div className="shrink-0 h-48 w-72 shadow-md rounded-md relative">
+    <div
+      className="shrink-0 h-48 w-72 shadow-md rounded-md relative"
+      style={style}
+    >
       <Skeleton.Image />
       <div className="absolute inset-0 z-index-2 p-4">
         <Skeleton.Title
@@ -99,7 +104,9 @@ export const AlbumListSkeleton = ({
   return (
     <div
       className={`flex w-full items-stretch p-2 ${
-        row ? 'flex-row space-x-4 overflow-x-auto' : 'flex-col space-y-4'
+        row
+          ? 'flex-row flex-nowrap space-x-4 overflow-x-auto'
+          : 'flex-col space-y-4'
       }`}
     >
       {list.map(({ key }) => (
@@ -121,7 +128,9 @@ export const TrackListSkeleton = ({
   return (
     <div
       className={`flex w-full items-stretch p-2 ${
-        row ? 'flex-row space-x-4 overflow-x-auto' : 'flex-col space-y-4'
+        row
+          ? 'flex-row flex-nowrap space-x-4 overflow-x-auto'
+          : 'flex-col space-y-4'
       }`}
     >
       {list.map(({ key }) => (

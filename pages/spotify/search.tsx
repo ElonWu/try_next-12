@@ -104,7 +104,7 @@ const SearchSpotify: NextPage = () => {
               loading={loading}
               empty={!result?.album?.list?.length}
               error={false}
-              skeleton={<AlbumListSkeleton />}
+              skeleton={<AlbumListSkeleton row />}
             >
               <div className="flex flex-nowrap overflow-x-auto space-x-4 p-2">
                 {(result?.album?.list || []).map((album: Album) => (

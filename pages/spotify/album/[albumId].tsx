@@ -38,16 +38,20 @@ const ArtistedDetail: NextPage = () => {
   return (
     <UserLayout title={title}>
       <div className="flex flex-col items-stretch space-y-4">
-        <div className="flex justify-center px-4 pt-4">
-          <Loading
-            loading={loading}
-            error={hasError}
-            empty={!data}
-            skeleton={<AlbumSkeleton />}
-          >
-            {data && <AlbumPreview album={data} />}
-          </Loading>
-        </div>
+        <Loading
+          loading={loading}
+          error={hasError}
+          empty={!data}
+          skeleton={
+            <AlbumSkeleton
+              style={{ width: 'calc(100% - 32px)', margin: '16px 16px 0' }}
+            />
+          }
+        >
+          <div className="flex justify-center px-4 pt-4">
+            {data && <AlbumPreview album={data} style={{ width: '100%' }} />}
+          </div>
+        </Loading>
 
         <div className="flex flex-col space-y-4 items-stretch pb-4">
           <div className="flex items-center justify-between px-4">

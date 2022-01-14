@@ -25,7 +25,7 @@ const ArtistAlbums = ({ artistId }: { artistId: string }) => {
         loading={loading}
         error={hasError}
         empty={!data?.length}
-        skeleton={<AlbumListSkeleton count={2} />}
+        skeleton={<AlbumListSkeleton row count={3} />}
       >
         <div className="flex flex-nowrap overflow-auto space-x-4 pr-4">
           {data.map((album) => (

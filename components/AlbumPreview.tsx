@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import type { CSSProperties, FC } from 'react';
 import { useRouter } from 'next/router';
 import { Album } from '@type/spotify';
 import { IconLikeHeart } from '@douyinfe/semi-icons';
@@ -6,22 +7,23 @@ import { local } from '@utils/local_request';
 import { throttle } from 'lodash';
 import { Notification } from '@douyinfe/semi-ui';
 
-const AlbumPreview = ({
-  album,
-  link,
-  showLike,
-}: {
+const AlbumPreview: FC<{
   album: Album;
   link?: boolean;
   showLike?: boolean;
-}) => {
+  style?: CSSProperties;
+}> = ({ album, link, showLike, style = {} }) => {
   const router = useRouter();
 
   return (
     album && (
       <div
         className="shrink-0 h-48 w-72 rounded-md overflow-hidden bg-no-repeat bg-cover bg-center cursor-pointer"
-        style={{ backgroundImage: `url(${album?.images?.[0]?.url})` }}
+        style={Object.assign(
+          {},
+          { backgroundImage: `url(${album?.images?.[0]?.url})` },
+          style,
+        )}
         onClick={() => link && router.push(`/spotify/album/${album?.id}`)}
       >
         <div className="h-full shadow-md p-4 flex flex-col items-start justify-between bg-gradient-to-br from-slate-500/60 to-slate-900/60 ">
