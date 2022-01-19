@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Empty } from '@douyinfe/semi-ui';
 import { Track } from '@type/spotify';
 import { useRouter } from 'next/router';
+import Image from 'next/image';
 const TrackPlay = ({ track }: { track: Track }) => {
   const router = useRouter();
+
+  const {
+    url = '',
+    width = 0,
+    height = 0,
+  } = useMemo(() => track?.album?.images?.[0] || {}, [track]);
 
   if (!track) return <Empty title="暂无数据" />;
 
@@ -15,10 +22,12 @@ const TrackPlay = ({ track }: { track: Track }) => {
         if (albumId) router.replace(`/spotify/album/${albumId}`);
       }}
     >
-      <img
-        src={track?.album?.images?.[0]?.url}
+      <Image
+        src={url}
+        width={width}
+        height={height}
         alt="Album"
-        className="w-full h-auto rounded-sm"
+        className="h-auto rounded-sm"
       />
     </div>
   );

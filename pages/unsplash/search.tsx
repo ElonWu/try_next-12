@@ -14,8 +14,9 @@ import { debounce } from 'lodash';
 import { local } from '@utils/local_request';
 import Loading from '@components/base/loading';
 import { UnsplashImage } from '@type/unsplash';
+import Image from 'next/image';
 
-const SearchSpotify: NextPage = () => {
+const SearchUnsplash: NextPage = () => {
   const [list, setList] = useState<UnsplashImage[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [search, setSearch] = useState<string | undefined>();
@@ -39,7 +40,7 @@ const SearchSpotify: NextPage = () => {
       } finally {
         setLoading(false);
       }
-    }, 2000),
+    }, 800),
     [],
   );
 
@@ -88,13 +89,15 @@ const SearchSpotify: NextPage = () => {
                   className="w-full m-auto px-2 pt-2 rounded-md shadow-md"
                 >
                   <a
+                    className="flex items-center justify-center overflow-hidden h-48 relative"
                     href={`${links?.html}?utm_source=Wu&utm_medium=referral`}
                     target="__blank"
                   >
-                    <img
+                    <Image
                       src={urls?.regular}
                       alt={alt_description}
-                      className="w-full h-48 object-cover object-center rounded-sm shadow-sm"
+                      className="object-cover object-center"
+                      layout="fill"
                     />
                   </a>
 
@@ -133,7 +136,7 @@ const SearchSpotify: NextPage = () => {
   );
 };
 
-export default SearchSpotify;
+export default SearchUnsplash;
 
 // run-time 实时根据 params 查询和渲染
 export const getServerSideProps = SpotifyGetServerSideProps;

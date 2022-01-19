@@ -15,16 +15,18 @@ const ArtistPreview = ({
 }) => {
   const router = useRouter();
 
+  const {
+    url = '',
+    width = 0,
+    height = 0,
+  } = useMemo(() => artist?.images?.[0] || {}, [artist]);
+
   return (
     <div
       className="w-full shrink-0 cursor-pointer relative"
       onClick={() => link && router.push(`/spotify/artist/${artist?.id}`)}
     >
-      <img
-        src={artist?.images?.[0]?.url || ''}
-        alt={artist?.name}
-        className="w-full"
-      />
+      <Image src={url} alt={artist?.name} width={width} height={height} />
       <div
         className="absolute inset-0 p-4 flex flex-col space-y-2 items-stretch justify-end"
         style={{

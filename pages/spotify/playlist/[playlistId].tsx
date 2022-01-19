@@ -17,6 +17,7 @@ import Loading, {
   ArtistSkeleton,
   TrackListSkeleton,
 } from '@components/base/loading';
+import Image from 'next/image';
 
 const PlaylistDetail: NextPage = () => {
   const router = useRouter();
@@ -35,9 +36,16 @@ const PlaylistDetail: NextPage = () => {
 
   const [activeId, setActiveId] = useState<string | null>();
 
+  const { url, width, height } = useMemo(
+    () => data?.images?.[0] || { url: '', width: 0, height: 0 },
+    [data],
+  );
+
+  console.log({ url, width, height });
+
   return (
     <UserLayout title={title}>
-      <div className="flex flex-col space-y-4 items-stretch py-4">
+      <div className="flex flex-col space-y-4 items-stretch pb-4">
         <Loading
           loading={loading}
           error={hasError}
@@ -46,10 +54,11 @@ const PlaylistDetail: NextPage = () => {
         >
           {data && (
             <div className="w-full shrink-0 cursor-pointer relative">
-              <img
-                src={data.images?.[0]?.url}
+              <Image
+                src={url}
+                width={width || 400}
+                height={height || 400}
                 alt={data.name}
-                className="w-full"
               />
               <div
                 className="absolute inset-0 p-4 flex flex-col space-y-4 items-stretch justify-end"

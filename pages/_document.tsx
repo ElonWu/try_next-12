@@ -1,4 +1,4 @@
-import Document, { Html, Head, Main, NextScript } from 'next/document'
+import Document, { Html, Head, Main, NextScript } from 'next/document';
 
 // 替换全局的 document 布局
 class MyDocument extends Document {
@@ -12,16 +12,15 @@ class MyDocument extends Document {
           />
           <meta name="description" content="ElonWu trying next12" />
           <link rel="icon" href="/favicon.ico" />
+          <NextScript />
         </Head>
 
-        
         <body>
           <Main />
-          <NextScript />
         </body>
       </Html>
-    )
+    );
   }
 }
 
-export default MyDocument
+export default MyDocument;

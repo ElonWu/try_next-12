@@ -10,5 +10,13 @@ declare module 'iron-session' {
       refresh_token?: string;
       profile?: User;
     };
+
+    feishu?: {
+      app_id: string;
+      app_secret: string;
+      url: string;
+      nonceStr: string;
+      last_update: number;
+    };
   }
 }
